@@ -133,3 +133,11 @@ user_link(Username) ->
 
 user_link(Username, Text) ->
     [<<"<a href=\"/users/">>, Username, <<"\">">>, Text, <<"</a>">>].
+
+%% @spec normalize_name(Name) -> Result
+%% where 
+%%       Name = string() | atom()
+%% @doc Normalize a name.
+normalize_name(Name) when is_atom(Name) -> Name;
+normalize_name([X | Y]) ->
+    [string:to_upper(X) | string:to_lower(Y)].
