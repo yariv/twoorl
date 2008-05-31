@@ -1,0 +1,5 @@
+<%@ catch_all({Userlink, Body, Time}) %>
+<div class="twoorl">
+  <div class="twoorl_body"><% Body %></div>
+  <div class="twoorl_metadata"><% Userlink %> <% Time %></div>
+</div>

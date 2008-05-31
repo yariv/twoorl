@@ -1,0 +1,19 @@
+<%@ index([Username, Timeline]) %>
+<table id="txt_table">
+  <tr>
+    <td width="100%"><div class="t1">What are you up to?</div></td>
+    <td align="right"><div id="chars">140<div></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <form action="/api/send" method="post" id="txt_form">
+	<textarea id="txt" name="msg"></textarea>
+      </form>
+      <input type="button" id="submit" value="send" onclick="send()"/>
+    </td>
+  </tr>
+</table>
+<div class="t2"></div>
+
+<% Timeline %>
+

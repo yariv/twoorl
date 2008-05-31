@@ -1,0 +1,21 @@
+<%@ catch_all([{Username, ToFollow}, Data]) %>
+<div class="header1">
+  <table>
+    <tr>
+      <td><div class="t3"><% Username %>'s timeline</div></td>
+      <td class="following_links">
+	<a href="/following/<% Username %>">following</a> |
+	<a href="/followers/<% Username %>">followers</a>
+      </td>
+    </tr>
+  </table>
+  <% if ToFollow =/= undefined -> to_follow(ToFollow, Username);
+    true -> [] end %>
+</div>
+<% Data %>
+
+<%@ to_follow(Val, Username) %>
+<div class="follow_button">
+  <button <% if not Val -> <<"style=\"display: none\"">>; true -> [] end %> id="follow" onclick="follow('<% Username %>','1')">follow</button>
+  <button <% if Val -> <<"style=\"display: none\"">>; true -> [] end %> id="unfollow" onclick="follow('<% Username %>','0')">unfollow</button>
+</div>

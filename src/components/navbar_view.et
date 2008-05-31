@@ -1,0 +1,9 @@
+<%@ index(Links) %>
+<table id="navbar">
+  <tr>
+    <% links(Links) %>
+  </tr>
+</table>
+
+<%@ links([Link]) %><td class="tab"><% Link %></td>
+<%@ links([Link | Rest]) %><td class="tab"><% Link %> | </td><% links(Rest) %>

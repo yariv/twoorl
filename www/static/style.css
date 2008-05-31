@@ -1,0 +1,140 @@
+body {
+  font-family: helvetica, verdana, sans-serif;
+  color: #353535;
+  margin:10px 0px; padding:0px;
+  text-align:center;
+  background-image: url('/static/bg1.jpg')
+}
+form input {
+  margin-bottom: 5px;
+}
+
+#content {
+  width:550px;
+  margin:0px auto;
+  text-align:left;
+  padding:15px;
+  background-color: #fff;
+} 
+
+#top {
+  width: 100%;
+  background-color: #eee;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+#logo a{
+  font-size: 1.3em;
+}
+
+#header {
+  text-align: right;
+  margin-bottom: 10px;
+  font-size: 0.8em;
+  vertical-align: middle;
+}
+
+.header1 {
+  padding-bottom: 10px;
+  border-bottom: #999 solid 1px;
+}
+
+.t1 {font-size: 1.5em;}
+
+.t2, .t3 {
+  font-size: 1.5em;
+}
+
+.t2 {
+  border-bottom: #999 solid 1px;
+  padding-bottom: 20px;
+}
+
+#txt_table {
+  width: 500px;
+  margin: 0px auto;
+}
+
+#txt {
+  width: 500px;
+  height: 50px;
+}
+
+#chars {
+  color: #ddd;
+  font-size: 1.3em;
+}
+
+.err {
+  color: #f00;
+}
+
+#errs {
+  margin-bottom: 10px;
+}
+
+#timeline {
+  margin-bottom: 10px;
+}
+
+.msg {
+  border-bottom: #999 solid 1px;
+  padding: 5px 3px;
+}
+.usrlink {
+  font-size: 1.1em;
+}
+
+a {
+  text-decoration: none;
+  color: #00c;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+a:visited {
+  color: #00c;
+}
+
+.bigmsg .msgbody {
+  font-size: 3em;
+}
+
+.time {
+  font-size: 0.7em;
+  color: #666;
+  white-space: nowrap;
+}
+
+.following_links {
+  padding-left: 10px;
+  vertical-align: bottom;
+}
+
+#navbar {
+  margin: auto;
+}
+
+.paging_links {
+  border-collapse: collapse;
+}
+.paging_link {
+  padding: 1px 3px;
+  border: #aaa solid 1px;
+}
+
+#footer {
+  margin: 20px auto 0px auto;
+  font-size: 0.7em;
+  
+}
+
+.twoorl {
+  padding: 50px 50px;
+}
+
+.twoorl_body {
+  font-size: 3em;
+}

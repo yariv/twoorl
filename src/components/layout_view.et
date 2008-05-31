@@ -1,0 +1,14 @@
+<%@ index([Username, Navbar, Ewc]) %>
+<table id="top">
+  <tr>
+    <td id="logo"><a href="/">Twoorl</a></td>
+    <td id="header"><% header(Username) %></td>
+  </tr>
+</table>
+<% Navbar %>
+<% Ewc %>
+<div id="footer">Get the <a href="http://code.google.com/p/twoorl">source code</a></div>
+
+<%@ header(undefined) %><a href="/login">login</a> | <a href="/register">register</a>
+<%@ header(Username) %>logged in as <% Username %> | <a href="/logout">logout</a>
+

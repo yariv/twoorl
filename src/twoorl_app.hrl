@@ -1,0 +1,5 @@
+-define(DB_HOSTNAME, "localhost").
+-define(DB_USERNAME, "root").
+-define(DB_PASSWORD, "password").
+-define(DB_DATABASE, "twoorl").
+-define(APP_PATH, "/home/yariv/apps/twoorl/trunk/twoorl").

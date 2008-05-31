@@ -1,0 +1,26 @@
+<%@ index([{Num, Total, From, To, ShowStats, Desc, PagingLinks}, Content]) %>
+<% if ShowStats ->
+    [<<"<div class=\"paging_stats\">">>, stats(Num, Desc, From, To, Total), <<"</div>">>];
+    true ->
+      []
+  end %>
+<div class="paging_content">
+<% Content %>
+</div>
+<table class="paging_links"><tr><% [show_link(Link) || Link <- PagingLinks] %></tr></table>
+
+
+<%@ show_link({nolink, Text}) %><td class="paging_link"><% Text %></td>
+<%@ show_link({link, Href, Text}) %><td class="paging_link"><% erlyweb_html:a(Href, Text) %></td>
+
+<%@ stats(0, _, _, _, "0") %>
+<%@ stats(0, Desc, _, _, _) %>no more <% Desc %>s
+<%@ stats(_Num, Desc, "1", "1", Total) %>1 <% Desc %>
+<%@ stats(_Num, Desc, From, From, undefined) %><% Desc %> <% From %>
+<%@ stats(_Num, Desc, From, From, Total) %><% Desc %> <% From %> out of <% Total %>
+<%@ stats(_Num, Desc, From, To, Total) %><% Desc %>s <% From %> to <% To %><%
+	if Total =/= undefined -> [<<" out of ">>, Total];
+		true -> []
+	end %>
+	
+

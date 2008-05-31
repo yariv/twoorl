@@ -1,0 +1,19 @@
+<%@ show_related({Username, IsFollowing, UserLinks}) %> 
+<div class="t2"><% title(IsFollowing, Username) %></div>
+<div class="user_list">
+  <% links(Username, IsFollowing, UserLinks) %>
+</div>
+
+<%@ title(true, Username) %>People <% Username %> follows
+<%@ title(false, Username) %><% Username %>'s followers
+
+<%@ links(Username, true, []) %><% twoorl_util:user_link(Username) %> isn't following anyone
+<%@ links(Username, false, []) %><% twoorl_util:user_link(Username) %> has no followers
+<%@ links(Username, _, Links) %><% [user_link(UserLink) || 
+  UserLink <- Links] %>
+
+
+<%@ user_link(UserLink) %>
+<div class="user_link">
+<% UserLink %>
+</div>

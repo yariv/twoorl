@@ -1,0 +1,12 @@
+<%@ show(Errs) %>
+<% if Errs =/= [] -> errs([err1(Err) || Err <- Errs]); true -> [] end %>
+
+<%@ errs(Errs) %><div id="errs"><% Errs %></div>
+<%@ err1(Err) %><div class="err">* <% err(Err) %></div>
+
+<%@ err({missing_field, Field}) %>the <% Field %> field is required
+<%@ err({invalid_username, Val}) %>the username '<% Val %>' is taken
+<%@ err(invalid_login) %>invalid username or password 
+<%@ err(password_too_short) %>the password you entered is too short
+<%@ err(password_mismatch) %>the password verification didn't match
+

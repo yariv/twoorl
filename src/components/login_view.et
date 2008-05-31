@@ -1,0 +1,11 @@
+<%@ index(Errs) %>
+<div class="t2">Login</div>
+<% twoorl_errs:show(Errs) %>
+<form action="/login" method="post">
+  <div>username:</div>
+  <div><input name="username" id="input1"/></div>
+  <div>password:</div>
+  <div><input name="password" type="password"/></div>
+  <div><input type="submit" value="login"/></div>
+</form>
+Not a member? <a href="/register">register</a>
