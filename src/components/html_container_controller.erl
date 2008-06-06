@@ -24,5 +24,16 @@
 private() ->
 	true.
 
-index(_A, Ewc) ->
-	Ewc.
+index(A, Ewc) ->
+    Usr = twoorl_util:get_usr(A),
+    [{data, if Usr =/= undefined ->
+            Background = Usr:background(),
+            if Background =/= undefined ->
+                Background;
+            true ->
+                "/static/bg1.jpg"
+            end;
+	    true ->
+		   "/static/bg1.jpg"
+	    end},
+	  Ewc].

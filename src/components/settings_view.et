@@ -1,5 +1,5 @@
 <%@ index({TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Errs, Msgs}) %>
+    GravatarEnabledChecked, Background, Errs, Msgs}) %>
 <div class="t2">Settings</div>
 <% twoorl_messages:show_errs(Errs) %>
 <% twoorl_messages:show(Msgs) %>
@@ -8,6 +8,11 @@
     <div class="t3">Gravatar</div>
     <div>Use <a href="http://gravatar.com">gravatar</a>?
       <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
+  </div>
+  <div class="section">
+    <div class="t3">Background</div>
+    <div>Custom background URL:</div>
+    <div><input size="75" name="background" value="<% Background %>"/></div>
   </div>
   <div class="section">
     <div class="t3">Twitter</div>

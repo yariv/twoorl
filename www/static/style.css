@@ -3,7 +3,6 @@ body {
   color: #353535;
   margin:10px 0px; padding:0px;
   text-align:center;
-  background-image: url('/static/bg1.jpg')
 }
 form input {
   margin-bottom: 5px;
