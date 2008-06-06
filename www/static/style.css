@@ -46,7 +46,7 @@ form input {
   font-size: 1.5em;
 }
 
-.t2 {
+.t2, .section {
   border-bottom: #999 solid 1px;
   padding-bottom: 20px;
 }
@@ -70,7 +70,11 @@ form input {
   color: #f00;
 }
 
-#errs {
+.message {
+  color: #0f0;
+}
+
+.messages {
   margin-bottom: 10px;
 }
 
@@ -137,4 +141,16 @@ a:visited {
 
 .twoorl_body {
   font-size: 3em;
+}
+
+fieldset {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+#twitter_msg {
+  font-size: 0.8em;
+  text-align: left;
+  color: #999;
 }

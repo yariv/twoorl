@@ -1,7 +1,8 @@
-<%@ catch_all([{Username, ToFollow}, Data]) %>
+<%@ catch_all([{Username, ToFollow, Gravatar}, Data]) %>
 <div class="header1">
   <table>
     <tr>
+      <td><% Gravatar %></td>
       <td><div class="t3"><% Username %>'s timeline</div></td>
       <td class="following_links">
 	<a href="/following/<% Username %>">following</a> |

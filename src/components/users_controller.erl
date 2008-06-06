@@ -41,7 +41,7 @@ catch_all(A, [Username]) ->
 				Following == undefined
 			end
 		end,
-	    [{data, {Username, ToFollow}},
+	    [{data, {Username, ToFollow, usr:get_gravatar_icon(Usr)}},
 	     {ewc, timeline, show, [A, [Usr:id()],
 				    [{big_first, true},
 				     {hide_user, true}]]}]

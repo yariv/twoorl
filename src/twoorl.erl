@@ -24,11 +24,25 @@
 -include("twoorl_app.hrl").
 
 start() ->
+    application:start(inets),
     init_mnesia(),
     TablesInfo = [{session, [{attributes, record_info(fields, session)}]}],
     create_mnesia_tables(TablesInfo),
     init_mysql(),
-    erlyweb:compile(?APP_PATH, [{erlydb_driver, mysql}]).
+    compile().
+
+compile() ->
+    compile([]).
+
+compile_dev() ->
+    compile([{auto_compile, true}]).
+
+compile_update() ->
+    compile([{last_compile_time, auto}]).
+
+compile(Opts) ->
+    erlyweb:compile(?APP_PATH,
+		    [{erlydb_driver, mysql}, {erlydb_timeout, 20000} | Opts]).
 
 init_mnesia() ->
     ?L("creating schema"),
@@ -80,31 +94,10 @@ init_mysql() ->
 		 [{hostname, ?DB_HOSTNAME},
 		  {username, ?DB_USERNAME}, {password, ?DB_PASSWORD},
 		  {database, ?DB_DATABASE},
-		  {logfun, fun log/4}]),
+		  {logfun, fun twoorl_util:log/4}]),
     lists:foreach(
       fun(_) ->
 	      mysql:connect(erlydb_mysql, ?DB_HOSTNAME, undefined,
 			    ?DB_USERNAME, ?DB_PASSWORD, ?DB_DATABASE, true)
-      end, lists:seq(1, 20)).
+      end, lists:seq(1, ?DB_POOL_SIZE)).
 
-log(Module, Line, Level, FormatFun) ->
-    Func = case Level of
-	       debug ->
-		   info_msg;
-	       info ->
-		   info_msg;
-	       normal ->
-		   info_msg;
-	       error ->
-		   error_msg;
-	       warn ->
-		   warning_msg
-	   end,
-    if Level =/= debug ->
-	    {Format, Params} = FormatFun(),
-	    error_logger:Func("~w:~b: "++ Format ++ "~n",
-			      [Module, Line | Params]);
-       true ->
-	    ok
-    end.
-    

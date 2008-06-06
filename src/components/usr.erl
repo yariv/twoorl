@@ -22,3 +22,11 @@
 -compile(export_all).
 -include("twoorl.hrl").
 
+get_gravatar_icon(Usr) ->
+    case usr:gravatar_enabled(Usr) of
+	1 ->
+	    twoorl_util:gravatar_icon(
+	      twoorl_util:gravatar_id(usr:email(Usr)));
+	0 ->
+	    twoorl_util:gravatar_icon(?DEFAULT_GRAVATAR_ID)
+    end.

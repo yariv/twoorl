@@ -1,0 +1,25 @@
+<%@ index({TwitterUsername, TwitterPassword, TwitterEnabledChecked,
+    GravatarEnabledChecked, Errs, Msgs}) %>
+<div class="t2">Settings</div>
+<% twoorl_messages:show_errs(Errs) %>
+<% twoorl_messages:show(Msgs) %>
+<form action="/settings" method="post">
+  <div class="section">
+    <div class="t3">Gravatar</div>
+    <div>Use <a href="http://gravatar.com">gravatar</a>?
+      <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
+  </div>
+  <div class="section">
+    <div class="t3">Twitter</div>
+    <div>You may provide your Twitter account details to have your twoorls automatically posted to Twitter.<br/><br/>
+      Only twoorls that don't contain replies (e.g. "@sergey") will be posted to Twitter.<br/>
+      <br/>
+      <div>Twitter username: </div>
+      <div><input name="twitter_username" value="<% TwitterUsername %>"/></div>
+      <div>Twitter password: </div>
+      <div><input name="twitter_password" type="password" value="<% TwitterPassword %>"/></div>
+      <div>Automatically post my Twoorls to Twitter? <input type="checkbox" name="twitter_enabled" <% TwitterEnabledChecked %>/></div>
+      <div><input type="submit" value="submit"/></div>
+    </div>
+</form>
+

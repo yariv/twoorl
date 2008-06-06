@@ -28,7 +28,7 @@ index(A) ->
 	    Params = yaws_api:parse_post(A),
 	    {[Username, Email, Password, Password2], Errs} =
 		erlyweb_forms:validate(
-		  A, ["username", "email", "password", "password2"],
+		  Params, ["username", "email", "password", "password2"],
 		  fun validate/2),
 	    Errs1 = 
 		if Password == Password2 ->
@@ -37,29 +37,20 @@ index(A) ->
 			Errs ++ [password_mismatch]
 		end,
 	    if Errs1 =/= [] ->
-		    {data, Errs1};
+		    {data, {Username, Email, Errs1}};
 	       true ->
 		    %% todo set cookie
 		    Usr = register_usr(Username, Email, Password),
 		    login_controller:do_login(Usr)
 	    end;
 	_ ->
-	    {data, []}
+	    {data, {[],[],[]}}
     end.
 
 validate(Name, Val) ->
     case Name of
 	"username" ->
-	    if Val == [] ->
-		    {error, {missing_field, "username"}};
-	       true ->
-		    case usr:find_first({username,'=',Val}) of
-			undefined ->
-			    {ok, twoorl_util:htmlize(Val)};
-			_ ->
-			    {error, {invalid_username, Val}}
-		    end
-	    end;
+	    validate_username(Val);
 	"password" ->
 	    case length(Val) >= ?MIN_PASSWORD_LENGTH of
 		true ->
@@ -76,6 +67,26 @@ validate(Name, Val) ->
 	_ ->
 	    ok
     end.
+
+validate_username([]) -> {error, {missing_field, "username"}};
+validate_username(Val) ->
+    %% regexp:parse("[A-Za-z0-9_]+")
+    Re = {pclosure,{char_class,[95,{48,57},{97,122},{65,90}]}},
+    case regexp:match(Val, Re) of
+	nomatch ->
+	    {error, {invalid_username, twoorl_util:htmlize(Val)}};
+	{match,First,Len} when First =/= 1;
+	Len =/= length(Val) ->
+	    {error, {invalid_username, twoorl_util:htmlize(Val)}};
+	_ ->
+	    case usr:find_first({username,'=',Val}) of
+		undefined ->
+		    {ok, Val};
+		_ ->
+		    {error, {username_taken, Val}}
+	    end
+    end.
+
 				      
 register_usr(Username, Email, Password) ->
     Usr = usr:new_with([{username, list_to_binary(Username)},

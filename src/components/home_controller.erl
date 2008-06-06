@@ -33,6 +33,6 @@ index(A) ->
 					     [?MAX_FOLLOWING_BOX_SIZE,
 					      length(Followings)]),
 					   Followings),
-	      [{data, Usr:username()},
+	      [{data, {Usr:username(), Usr:twitter_enabled() == 1}},
 	       {ewc, timeline, show, [A, [Usr:id() | FollowingIds]]}]
       end).

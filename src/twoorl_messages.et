@@ -1,0 +1,20 @@
+<%@ show_errs(Msgs) %>
+<% if Msgs =/= [] -> messages([message({error, Msg}) || Msg <- Msgs]); true -> [] end %>
+
+<%@ show(Msgs) %>
+<% if Msgs =/= [] -> messages([message(Msg) || Msg <- Msgs]); true -> [] end %>
+
+<%@ messages(Msgs) %><div class="messages"><% Msgs %></div>
+<%@ message({error, Msg}) %><div class="err">* <% msg(Msg) %></div>
+<%@ message(Msg) %><div class="message">* <% msg(Msg) %></div>
+
+<%@ msg({missing_field, Field}) %>the <% Field %> field is required
+<%@ msg({username_taken, Val}) %>the username '<% Val %>' is taken
+<%@ msg({invalid_username, Val}) %>the username '<% Val %>' is invalid (only letters, numbers and underscore are accepted)
+<%@ msg(invalid_login) %>invalid username or password 
+<%@ msg(password_too_short) %>the password you entered is too short (6 characters minimum)
+<%@ msg(password_mismatch) %>the password verification didn't match
+<%@ msg(twitter_unauthorized) %>Twitter rejected the username/password combination you provided
+<%@ msg(twitter_authorization_error) %>Couldn't connect to Twitter. Please try again later.
+
+<%@ msg({updated, Field}) %><% Field %> has been updated successfully

@@ -10,5 +10,6 @@
 <div id="footer">Get the <a href="http://code.google.com/p/twoorl">source code</a></div>
 
 <%@ header(undefined) %><a href="/login">login</a> | <a href="/register">register</a>
-<%@ header(Username) %>logged in as <% Username %> | <a href="/logout">logout</a>
-
+<%@ header(Username) %>logged in as <% Username %> |
+<a href="/settings">settings</a> |
+<a href="/logout">logout</a>

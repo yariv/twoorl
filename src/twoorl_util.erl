@@ -132,12 +132,133 @@ user_link(Username) ->
     user_link(Username, Username).
 
 user_link(Username, Text) ->
-    [<<"<a href=\"/users/">>, Username, <<"\">">>, Text, <<"</a>">>].
+    user_link(Username, Text, iolist).
 
-%% @spec normalize_name(Name) -> Result
-%% where 
-%%       Name = string() | atom()
-%% @doc Normalize a name.
-normalize_name(Name) when is_atom(Name) -> Name;
-normalize_name([X | Y]) ->
-    [string:to_upper(X) | string:to_lower(Y)].
+user_link(Username, Text, iolist) ->
+    erlyweb_html:a(["/users", Username], Text);
+user_link(Username, Text, list) ->
+    ["<a href=\"/users/", Username, "\">", Text, "</a>"].
+
+log(Module, Line, Level, FormatFun) ->
+    Func = case Level of
+	       debug ->
+		   info_msg;
+	       info ->
+		   info_msg;
+	       normal ->
+		   info_msg;
+	       error ->
+		   error_msg;
+	       warn ->
+		   warning_msg
+	   end,
+    if Level =/= debug ->
+	    {Format, Params} = FormatFun(),
+	    error_logger:Func("~w:~b: "++ Format ++ "~n",
+			      [Module, Line | Params]);
+       true ->
+	    ok
+    end.
+
+replace_matches(Body, RegExp, ReplaceFun, MaxLen) ->
+    {match, Matches} = regexp:matches(Body, RegExp),
+    if Matches == [] ->
+	    {lists:sublist(Body, MaxLen), [], 0};
+       true ->
+	    replace_matches1(Body, Matches, ReplaceFun, MaxLen)
+    end.
+
+replace_matches1(Body, Matches, ReplaceFun, MaxLen) ->
+    {CurIdx1, Acc, RemChars3, MatchAcc, LenDiffAcc2} =
+	lists:foldl(
+	  fun({_Begin, _MatchLength},
+	      {CurIdx, _Acc, _RemChars, _MatchAcc, LenDiffAcc} = Res)
+	     when CurIdx + LenDiffAcc > MaxLen->
+		  %% ignore the match if we passed MaxLen chars
+		  Res;
+	     ({Begin, MatchLength},
+	      {CurIdx, Acc, RemChars, MatchAcc, LenDiffAcc}) ->
+		  PrefixLen = Begin - CurIdx,
+		  {Prefix, RemChars1} = lists:split(PrefixLen, RemChars),
+		  {Match, RemChars2} = lists:split(MatchLength, RemChars1),
+		  {NewStr1, NewLen} =
+		      case ReplaceFun(Match) of
+			  {_,_} = Res -> Res;
+			  Res -> {Res, MatchLength}
+		      end,
+		  
+		  LenDiff = NewLen - MatchLength,
+		  OverFlow = (CurIdx + PrefixLen + NewLen) -
+		      (MaxLen - LenDiffAcc),
+		  
+		  %% if we detect an overflow, we discard the match
+		  {Acc1, LenDiffAcc1}
+		      = if OverFlow > 0 ->
+				
+				%% keep the remaining prefix
+				Rem = (MaxLen - LenDiffAcc) -
+					(CurIdx - 1),
+				Prefix1 =
+				    if Rem > PrefixLen ->
+					    Prefix;
+				       Rem < 1 ->
+					    [];
+				       true ->
+					    lists:sublist(Prefix, Rem)
+				    end,
+				{Prefix1,  LenDiffAcc - MatchLength};
+			   true ->
+				{[Prefix, NewStr1], LenDiffAcc + LenDiff}
+			end,
+		  {CurIdx + PrefixLen + MatchLength, [Acc1 | Acc], RemChars2,
+		   [Match | MatchAcc], LenDiffAcc1}
+	  end, {1, [], Body, [], 0}, Matches),
+    RemCharsLength = MaxLen - (CurIdx1 - 1) - LenDiffAcc2,
+    RemChars4 = if RemCharsLength > 0 ->
+			lists:sublist(RemChars3, RemCharsLength);
+		   true ->
+			[]
+		end,
+    {[lists:reverse(Acc), RemChars4], MatchAcc, LenDiffAcc2}.
+    
+
+get_tinyurl(Url) ->
+    TinyApi = "http://tinyurl.com/api-create.php?url=" ++ Url,
+    case http:request(TinyApi) of
+	{ok, {{_Protocol, 200, _}, _Headers, Body1}} ->
+	    {["<a href=\"", Body1, "\">", Body1, "</a>"], length(Body1)};
+	Res ->
+	    ?Error("tinyurl error: ~p", [Res]),
+	    Url
+    end.
+
+
+get_session_key(A) ->
+    yaws_arg:get_opaque_val(A, key).
+
+update_session(A, Usr) ->
+    update_session_by_key(twoorl_util:get_session_key(A), Usr).
+
+update_session_by_key(Key, Usr) ->
+    mnesia:dirty_write(#session{key=Key,
+				value=Usr}).
+
+
+gravatar_icon(GravatarId) ->
+    [<<"<img border=\"0\" src=\"http://www.gravatar.com/avatar.php?size=32&gravatar_id=">>,
+     GravatarId, <<"\"/>">>].
+
+gravatar_id(Email) ->
+    digest2str(erlang:md5(Email)).
+
+digest2str(Digest) ->
+    [[nibble2hex(X bsr 4), nibble2hex(X band 15)] ||
+	X <- binary_to_list(Digest)].
+
+-define(IN(X,Min,Max), X >= Min, X =< Max).
+
+
+nibble2hex(X) when ?IN(X, 0, 9)   -> X + $0;
+nibble2hex(X) when ?IN(X, 10, 15) -> X - 10 + $a.
+
+

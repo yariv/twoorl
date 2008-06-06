@@ -1,4 +1,4 @@
-<%@ index([Username, Timeline]) %>
+<%@ index([{Username,TwitterEnabled}, Timeline]) %>
 <table id="txt_table">
   <tr>
     <td width="100%"><div class="t1">What are you up to?</div></td>
@@ -7,7 +7,10 @@
   <tr>
     <td colspan="2" align="center">
       <form action="/api/send" method="post" id="txt_form">
-	<textarea id="txt" name="msg"></textarea>
+	<fieldset>
+	  <textarea rows="3" cols="70" id="txt" name="msg"></textarea>
+	  <% if TwitterEnabled -> twitter_msg(); true ->[] end %>
+	</fieldset>
       </form>
       <input type="button" id="submit" value="send" onclick="send()"/>
     </td>
@@ -16,4 +19,6 @@
 <div class="t2"></div>
 
 <% Timeline %>
+
+<%@ twitter_msg() %><div id="twitter_msg">Automatic posting to Twitter enabled for non-replies</div>
 
