@@ -31,7 +31,7 @@ process_request(A, Usr) ->
 			      Usr, TwitterUsername, TwitterPassword,
 			      TwitterEnabled, GravatarEnabled),
 			twoorl_util:update_session(A,Usr2),
-			[{updated, <<"your settings">>}];
+			[{updated, {<<"Your settings">>, plural}}];
 
 		    _ ->
 			[]
