@@ -36,6 +36,8 @@ start(A) ->
     case Appmod of
 	"/api" ++ _ ->
 	    {ewc, A2};
+    "/rss" ++ _ ->
+        {ewc, A2};
 	"/" when LoggedIn == true ->
 	    {ewr, home};
 	_ ->
