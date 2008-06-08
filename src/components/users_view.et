@@ -1,3 +1,6 @@
+<%@ catch_all({no_such_user, Username})%>
+The user '<% Username %>' doesn't exist.
+
 <%@ catch_all([{Username, ToFollow, Gravatar}, Data]) %>
 <div class="header1">
   <table>
