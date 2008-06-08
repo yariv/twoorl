@@ -17,21 +17,49 @@
 %%
 %% @author Nick Gerakines <nick@gerakines.net> [http://blog.socklabs.com/]
 %% @copyright Nick Gerakines, 2008
+%%
+%% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog@gmail.com]
+%% @copyright Yariv Sadan, 2008
 
--module(feed_controller).
--compile(export_all).
+-module(feeds_controller).
+-export([catch_all/2]).
 
-
-catch_all(A, ["main"]) ->
+catch_all(A, ["main", "rss"]) ->
     Messages = msg:find_with([{order_by, {created_on, desc}}, {limit, 20}]),
-    {data, {Messages}};
+    {data, {rss,
+	    <<"Twoorl / Everyone">>,
+	    <<"http://twoorl.com/main">>,
+	    <<"Latest twoorls from everyone">>,
+	    get_funs(A, Messages)}};
 
 
-catch_all(A, ["user", Username]) ->
-    case usr:find_first({username,'=',Username}) of
-	undefined ->
-	    exit({no_such_user, Username});
-	Usr ->
-        Messages = msg:find({usr_id,in, [Usr:id()]}, [{order_by, {created_on, desc}}, {limit, 20}]),
-	    {data, {Username, Usr, Messages}}
-    end.
+catch_all(A, ["users", Username, "rss"]) ->
+     case usr:find_first({username,'=',Username}) of
+	 undefined ->
+	     exit({no_such_user, Username});
+	 Usr ->
+	     Messages = msg:find(
+			  {usr_id,in, [Usr:id()]},
+			  [{order_by, {created_on, desc}}, {limit, 20}]),
+			 
+	     {data, {rss,
+		     [<<"Twoorl / ">>, Username],
+		     [<<"http://twoorl.com/users/">>, Username],
+		     [Username, <<"'s latest twoorls">>],
+		     get_funs(A, Messages)}}
+     end.
+
+get_funs(A, Messages) ->
+    [fun(title) ->
+	     [M:usr_username(), $:, 32, M:body_nolinks()];
+	(description) ->
+	     [M:usr_username(), $:, 32, M:body_nolinks()];
+	(pubdate) ->
+	     twoorl_util:format_datetime(element(2,M:created_on()));
+	(guid) ->
+	     msg:get_href(A, M, absolute);
+	(link) ->
+	     msg:get_href(A, M, absolute)
+     end || M <- Messages].
+	  
+

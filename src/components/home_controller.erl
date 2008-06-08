@@ -26,13 +26,7 @@ index(A) ->
     twoorl_util:auth(
       A,
       fun(Usr) ->
-	      Followings = following:find({usr_id1,'=',Usr:id()}),
-	      FollowingIds = [Following:usr_id2() || Following <- Followings],
-	      {FirstFollowings, _Rest} = lists:split(
-					   lists:min(
-					     [?MAX_FOLLOWING_BOX_SIZE,
-					      length(Followings)]),
-					   Followings),
+	      Ids = usr:get_timeline_usr_ids(Usr),
 	      [{data, {Usr:username(), Usr:twitter_enabled() == 1}},
-	       {ewc, timeline, show, [A, [Usr:id() | FollowingIds]]}]
+	       {ewc, timeline, show, [A, Ids]}]
       end).

@@ -1,4 +1,4 @@
-<%@ catch_all({rss, Title, Link, Description, Messages}) %>
+<%@ catch_all({rss, Title, Link, Description, Items}) %>
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -7,43 +7,17 @@
     <description><% Description %></description>
     <language>en-us</language>
     <ttl>40</ttl>
-    <% messages(Messages) %>
+    <% items(Items) %>
   </channel>
 </rss>
 
-
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>Twoorl / <% Username %></title>
-    <link>http://twoorl.com/users/<% Username %>"></link>
-    <description>Twoorl updates from <% Username %>.</description>
-    <language>en-us</language>
-    <ttl>40</ttl>
-<% draw_item(Messages) %>
-  </channel>
-</rss>
-
-<%@ main({Messages}) %>
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>Twoorl / Everyone</title>
-    <link>http://twoorl.com/main</link>
-    <description>Twoorl updates from Everyone.</description>
-    <language>en-us</language>
-    <ttl>40</ttl>
-<% draw_item(Messages) %>
-  </channel>
-</rss>
-
-<%@ messages([]) %>
-<%@ messages([Message | Messages]) %>
+<%@ items([]) %>
+<%@ items([Item | Rest]) %>
 <item>
-  <title><% Message:usr_username() %>: <% Message:body_raw() %></title>
-  <description><% Message:usr_username() %>: <% Message:body_raw() %></description>
-  <pubDate><!-- % Message:created_on() % --></pubDate>
-  <guid>urn:twoorl:twoot:<% integer_to_list(Message:usr_id()) %>:<% integer_to_list(Message:id()) %></guid>
-  <link>http://twoorl.com/users/<% Message:usr_username() %></link>
+  <title><% Item(title) %></title>
+  <description><% Item(description) %></description>
+  <pubDate><% Item(pubdate) %></pubDate>
+  <guid><% Item(guid) %></guid>
+  <link><% Item(link) %></link>
 </item>
-<% draw_item(Messages) %>
+<% items(Rest) %>

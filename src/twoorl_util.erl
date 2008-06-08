@@ -142,7 +142,7 @@ user_link(Username, Text, list) ->
 log(Module, Line, Level, FormatFun) ->
     Func = case Level of
 	       debug ->
-		   info_msg;
+		   undefined;
 	       info ->
 		   info_msg;
 	       normal ->
@@ -152,24 +152,47 @@ log(Module, Line, Level, FormatFun) ->
 	       warn ->
 		   warning_msg
 	   end,
-    if Level =/= debug ->
+    if Func == undefined ->
+	    ok;
+	true ->
 	    {Format, Params} = FormatFun(),
 	    error_logger:Func("~w:~b: "++ Format ++ "~n",
-			      [Module, Line | Params]);
-       true ->
-	    ok
+			      [Module, Line | Params])
     end.
 
-replace_matches(Body, RegExp, ReplaceFun, MaxLen) ->
+%% @doc Replace all the Body's substrings matching the RegExp
+%% or Matches list using the
+%% ReplaceFun function and without exceeding MaxLen characters.
+%%
+%% ReplaceFun takes one parameter: the substring to
+%% be matched. It returns a tuple of the form {Replacement,
+%% EffectiveReplacement} or just a replacement string.
+%% Replacement is the new substring. EffectiveReplacement (optional)
+%% is the "real" value of the replacement, which will be used for
+%% calculating the replacement's length and which will be returned in the
+%% function's return value. (EffectiveReplacement helps deal with links.)
+%%
+%% The return value is {Result, Changes}.
+%% Result is the new string with the substitutions applied (and whose length
+%% doesn't exceed MaxLen). Changes is a list of all {Match, Replacement} pairs
+%% where Match is the substring matching RegExp and Replacement is its
+%% replacement.
+%%
+%% @spec replace_matches(Body::string(),
+%%  RegExp::regexp() | [{integer(), integer()}],
+%%  ReplaceFun::function(), MaxLen::integer()) ->
+%%    {NewBody::iolist(), [{string(), string()}]}
+replace_matches(Body, RegExp, ReplaceFun, MaxLen) when is_tuple(RegExp) ->
     {match, Matches} = regexp:matches(Body, RegExp),
+    replace_matches(Body, Matches, ReplaceFun, MaxLen);
+replace_matches(Body, Matches, ReplaceFun, MaxLen) ->
     if Matches == [] ->
-	    {lists:sublist(Body, MaxLen), [], 0};
+	    {lists:sublist(Body, MaxLen), []};
        true ->
 	    replace_matches1(Body, Matches, ReplaceFun, MaxLen)
     end.
-
 replace_matches1(Body, Matches, ReplaceFun, MaxLen) ->
-    {CurIdx1, Acc, RemChars3, MatchAcc, LenDiffAcc2} =
+    {CurIdx1, Acc, RemChars3, MatchAcc2, LenDiffAcc2} =
 	lists:foldl(
 	  fun({_Begin, _MatchLength},
 	      {CurIdx, _Acc, _RemChars, _MatchAcc, LenDiffAcc} = Res)
@@ -181,14 +204,19 @@ replace_matches1(Body, Matches, ReplaceFun, MaxLen) ->
 		  PrefixLen = Begin - CurIdx,
 		  {Prefix, RemChars1} = lists:split(PrefixLen, RemChars),
 		  {Match, RemChars2} = lists:split(MatchLength, RemChars1),
-		  {NewStr1, NewLen} =
+		  {Replacement1, EffectiveReplacement1,
+		   EffectiveReplacementLen} =
 		      case ReplaceFun(Match) of
-			  {_,_} = Res -> Res;
-			  Res -> {Res, MatchLength}
+			  {Replacement2, EffectiveReplacement2} ->
+			      {Replacement2, EffectiveReplacement2,
+			       length(EffectiveReplacement2)};
+			  Replacement2 ->
+			      {Replacement2, Replacement2,
+			       length(Replacement2)}
 		      end,
 		  
-		  LenDiff = NewLen - MatchLength,
-		  OverFlow = (CurIdx + PrefixLen + NewLen) -
+		  LenDiff = EffectiveReplacementLen - MatchLength,
+		  OverFlow = (CurIdx + PrefixLen + EffectiveReplacementLen) -
 		      (MaxLen - LenDiffAcc),
 		  
 		  %% if we detect an overflow, we discard the match
@@ -208,10 +236,10 @@ replace_matches1(Body, Matches, ReplaceFun, MaxLen) ->
 				    end,
 				{Prefix1,  LenDiffAcc - MatchLength};
 			   true ->
-				{[Prefix, NewStr1], LenDiffAcc + LenDiff}
+				{[Prefix, Replacement1], LenDiffAcc + LenDiff}
 			end,
 		  {CurIdx + PrefixLen + MatchLength, [Acc1 | Acc], RemChars2,
-		   [Match | MatchAcc], LenDiffAcc1}
+		   [{Match, EffectiveReplacement1} | MatchAcc], LenDiffAcc1}
 	  end, {1, [], Body, [], 0}, Matches),
     RemCharsLength = MaxLen - (CurIdx1 - 1) - LenDiffAcc2,
     RemChars4 = if RemCharsLength > 0 ->
@@ -219,18 +247,25 @@ replace_matches1(Body, Matches, ReplaceFun, MaxLen) ->
 		   true ->
 			[]
 		end,
-    {[lists:reverse(Acc), RemChars4], MatchAcc, LenDiffAcc2}.
+    {[lists:reverse(Acc), RemChars4], MatchAcc2}.
     
 
+get_tinyurl("http://tinyurl.com/" ++ Rest = Url) when length(Rest) < 7 ->
+    get_tinyurl1(Url);
+get_tinyurl(Url) when length(Url) < 26 -> get_tinyurl1(Url);
 get_tinyurl(Url) ->
     TinyApi = "http://tinyurl.com/api-create.php?url=" ++ Url,
     case http:request(TinyApi) of
 	{ok, {{_Protocol, 200, _}, _Headers, Body1}} ->
-	    {["<a href=\"", Body1, "\">", Body1, "</a>"], length(Body1)};
+	    get_tinyurl1(Body1);
 	Res ->
 	    ?Error("tinyurl error: ~p", [Res]),
 	    Url
     end.
+
+get_tinyurl1(Body) ->
+    {["<a href=\"", Body, "\">", Body, "</a>"], Body}.
+
 
 
 get_session_key(A) ->
@@ -262,3 +297,64 @@ nibble2hex(X) when ?IN(X, 0, 9)   -> X + $0;
 nibble2hex(X) when ?IN(X, 10, 15) -> X - 10 + $a.
 
 
+iolist_fun(Rec) ->
+    fun(Field) ->
+	    erlydb_base:field_to_iolist(Rec:Field())
+    end.
+
+iolist_fun(Rec, Fun) ->
+    fun(Field) ->
+	    case Fun(Field) of
+		default ->
+		    erlydb_base:field_to_iolist(Rec:Field());
+		Other ->
+		    Other
+	    end
+    end.
+
+
+
+%% Reference: http://cyber.law.harvard.edu/rss/rss.html
+format_datetime({Date = {Year, Month, Day}, {Hour, Minute, Second}}) ->
+    Daynum = calendar:day_of_the_week(Date),
+    [day(Daynum), $,, 32, itos(Day), 32, mon(Month), 32,
+     itos(Year), 32, itos(Hour, 2), $:, itos(Minute, 2), $:, itos(Second, 2),
+     <<" GMT">>].
+
+itos(N) ->
+    integer_to_list(N).
+itos(N, Length) ->
+    Str = itos(N),
+    Diff =  Length - length(Str),
+    [lists:duplicate(Diff, $0), Str].
+
+day(N) ->
+    case N of
+	1 -> <<"Mon">>;   
+	2 -> <<"Tue">>;
+	3 -> <<"Wed">>;
+	4 -> <<"Thu">>;
+	5 -> <<"Fri">>;
+	6 -> <<"Sat">>;
+	7 -> <<"Sun">>
+		 end.
+
+mon(N) ->
+    case N of
+	1 -> <<"Jan">>;
+	2 -> <<"Feb">>;    
+	3 -> <<"Mar">>;
+	4 -> <<"Apr">>;
+	5 -> <<"May">>;
+	6 -> <<"Jun">>;
+	7 -> <<"Jul">>;
+	8 -> <<"Aug">>;
+	9 -> <<"Sep">>;
+	10 -> <<"Oct">>;
+	11 -> <<"Nov">>;
+	12 -> <<"Dec">>
+		  end.
+
+
+
+	    

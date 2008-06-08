@@ -25,7 +25,7 @@
 private() ->
     true.
 
-show_related(A, Username, IsFollowing) ->
+show_related(_A, Username, IsFollowing) ->
     case usr:find_first({username,'=',Username}) of
 	undefined ->
 	    exit({no_such_user, Username});
