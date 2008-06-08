@@ -1,0 +1,23 @@
+<%@ catch_all({rss, Title, Link, Description, Items}) %>
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title><% Title %></title>
+    <link><% Link %></link>
+    <description><% Description %></description>
+    <language>en-us</language>
+    <ttl>40</ttl>
+    <% items(Items) %>
+  </channel>
+</rss>
+
+<%@ items([]) %>
+<%@ items([Item | Rest]) %>
+<item>
+  <title><% Item(title) %></title>
+  <description><% Item(description) %></description>
+  <pubDate><% Item(pubdate) %></pubDate>
+  <guid><% Item(guid) %></guid>
+  <link><% Item(link) %></link>
+</item>
+<% items(Rest) %>

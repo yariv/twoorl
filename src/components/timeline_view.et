@@ -1,11 +1,11 @@
-<%@ show_msg({Id, Username, Gravatar, Userlink, Msg, Time, IsBig}) %>
+<%@ show_msg({Username, Gravatar, Userlink, Body, Href, Time, IsBig}) %>
 <div class="msg<% if IsBig -> <<" bigmsg">>; true -> [] end %>">
   <table>
     <tr>
       <% if Gravatar =/= undefined -> gravatar(Gravatar); true -> [] end %>
       <td>
 	<% if Userlink =/= undefined -> user_link(Userlink); true -> [] end %>
-	<span class="msgbody"><% Msg %></span> <span class="time"><a href="/twoorls/<% Username %>/<% Id %>"><% Time %></a></span></td>
+	<span class="msgbody"><% Body %></span> <span class="time"><a href="<% Href %>"><% Time %></a></span></td>
     </tr>
   </table>
 </div>

@@ -24,7 +24,7 @@
 catch_all(A, [Username]) ->
     case usr:find_first({username,'=',Username}) of
 	undefined ->
-	    exit({no_such_user, Username});
+	    {data, {no_such_user, Username}};
 	Usr ->
 	    ToFollow =
 		case twoorl_util:get_usr(A) of

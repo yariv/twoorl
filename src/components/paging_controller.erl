@@ -71,7 +71,7 @@ index(A, Fun, ResFun, Opts) ->
 		undefined -> <<"item">>;
 		Other3 -> Other3
 	     end,
-	     get_links(A, NumPages, Page, Params, Opts)}},
+	     get_links(A, NumPages, Page, Params)}},
       if ResFun == undefined ->
 	     Ewcs;
 	true ->
@@ -103,7 +103,7 @@ get_page(A, ReturnParams) ->
 	    Page
     end.
 
-get_links(A, NumPages, Page, Params, Opts) ->
+get_links(A, NumPages, Page, Params) ->
     Page1 = lists:max([lists:min([Page, NumPages]), 1]),
     Params1 = proplists:delete("page", Params),
 

@@ -82,7 +82,7 @@ show_msgs(A, Msgs, Opts) ->
 show_msg(A, Msg) ->
     show_msg(A, Msg, []).
 
-show_msg(_A, Msg, Opts) ->
+show_msg(A, Msg, Opts) ->
     Username = Msg:usr_username(),
     {Gravatar, Userlink} =
 	case proplists:get_value(hide_user, Opts) of
@@ -108,7 +108,5 @@ show_msg(_A, Msg, Opts) ->
     CreatedOn = msg:get_time_since(Msg),
     IsBig = proplists:get_value(is_big, Opts) == true,
     
-    {data, {integer_to_list(Msg:id()),
-	    Username,
-	    Gravatar, 
-	    Userlink, Msg:body(), CreatedOn, IsBig}}.
+    {data, {Username, Gravatar, Userlink,
+	    Msg:body(), msg:get_href(A, Msg), CreatedOn, IsBig}}.

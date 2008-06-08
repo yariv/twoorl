@@ -41,9 +41,8 @@ send(A) ->
 		    end),
 	      case Errs of
 		  [] ->
-		      Body1 = twoorl_util:htmlize(Body),
-		      Body2 = add_tinyurl_links(Body1),
-		      {Body3, RecipientNames} = add_reply_links(Body2),
+		      {Body1, BodyNoLinks, RecipientNames} =
+			  msg:process_raw_body(Body),
 
 		      TwitterEnabled = Usr:twitter_enabled() == 1,
 		      TwitterStatus = 
@@ -54,7 +53,8 @@ send(A) ->
 			  end,
 		      Msg = msg:new_with([{usr_username, Usr:username()},
 					  {usr_id, Usr:id()},
-					  {body, lists:flatten(Body3)},
+					  {body, Body1},
+					  {body_nolinks, BodyNoLinks},
 					  {body_raw, Body},
 					  {usr_gravatar_id,
 					   twoorl_util:gravatar_id(
@@ -96,7 +96,7 @@ send(A) ->
       end).
 
 save_replies(MsgId, RecipientNames) ->
-    RecipientNames1 = [tl(Name) || Name <- RecipientNames],
+    RecipientNames1 = [Name || Name <- RecipientNames],
     Recipients = 
 	usr:find({username, in, lists:usort(RecipientNames1)}),
     
@@ -168,34 +168,6 @@ follow(A) ->
       end).
 
 	      
-add_reply_links(Body) ->
-    %% regexp:parse("@[A-Za-z0-9_]+")
-    Re = {concat,64,
-            {pclosure,{char_class,[95,{48,57},{97,122},{65,90}]}}},
-    {Body1, RecipientNames, _LenDiff} = 
-	twoorl_util:replace_matches(
-	  Body, Re, fun([_ | Name] = Val) ->
-			    twoorl_util:user_link(Name, Val, list)
-		    end, ?MAX_TWOORL_LEN),
-    {Body1, RecipientNames}.
-	      
-add_tinyurl_links(Body) ->
-    %% regexp:parse("http://[^\s]+")
-    Re = {concat,
-	  {concat,
-	   {concat,
-	    {concat,{concat,{concat,{concat,104,116},116},112},58},
-	    47},
-	   47},
-	  {pclosure,{comp_class," "}}},
-
-    {Body2, _Links, _LenDiff} =
-	twoorl_util:replace_matches(
-	  Body, Re, fun twoorl_util:get_tinyurl/1, ?MAX_TWOORL_LEN),
-    Body2.
-
-
-
 send_tweet(Usr, Msg) ->
     Username = Usr:twitter_username(),
     Password = Usr:twitter_password(),
