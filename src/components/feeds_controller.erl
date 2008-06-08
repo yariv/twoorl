@@ -40,33 +40,33 @@ catch_all(A, ["users", Username, Type]) ->
 	     Messages = msg:find(
 			  {usr_id,in, [Usr:id()]},
 			  [{order_by, {created_on, desc}}, {limit, 20}]),
-			 
 	     {data, {list_to_atom(Type),
 		     [<<"Twoorl / ">>, Username],
 		     [<<"http://twoorl.com/users/">>, Username],
 		     [Username, <<"'s latest twoorls">>],
 		     get_funs(A, Messages)}}
-     end.
+     end;
 
 catch_all(A, ["friends", Username, Type]) ->
-    case usr:find_first({username,'=',Username}) of
+    case usr:find_first({username, '=', Username}) of
         undefined ->
             exit({no_such_user, Username});
         Usr ->
             Ids = usr:get_timeline_usr_ids(Usr),
             Messages = msg:find(
-            {usr_id,in, [Ids]},
-            [{order_by, {created_on, desc}}, {limit, 20}]),
+                {usr_id,in, [Ids]},
+                [{order_by, {created_on, desc}}, {limit, 20}]
+            ),
             {data, {list_to_atom(Type),
                 [<<"Twoorl / ">>, Username],
                 [<<"http://twoorl.com/users/">>, Username],
                 [Username, <<"'s friend's latest twoorls">>],
                 get_funs(A, Messages)}
             }
-    end.
+    end;
 
 catch_all(A, _) ->
-    catch_all(A, ["main", "rss"]);
+    catch_all(A, ["main", "rss"]).
 
 get_funs(A, Messages) ->
     [fun(title) ->
@@ -74,7 +74,7 @@ get_funs(A, Messages) ->
 	(description) ->
 	     [M:usr_username(), $:, 32, M:body_nolinks()];
  	(htmldescription) ->
- 	     [M:usr_username(), $:, 32, M:body_nolinks()];
+ 	     [M:usr_username(), $:, 32, binary_to_list(M:body())];
 	(pubdate) ->
 	     twoorl_util:format_datetime(element(2,M:created_on()));
 	(guid) ->

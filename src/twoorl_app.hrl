@@ -1,3 +1,4 @@
+%% We really need to move this stuff out of this file -- nkg.
 -define(DB_HOSTNAME, "localhost").
 -define(DB_USERNAME, "root").
 -define(DB_PASSWORD, "password").

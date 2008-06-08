@@ -23,6 +23,9 @@
 -include("twoorl.hrl").
 -include("twoorl_app.hrl").
 
+start(_Type, _Args) ->
+    twoorl_sup:start_link([]).
+
 start() ->
     application:start(inets),
     init_mnesia(),
@@ -41,8 +44,15 @@ compile_update() ->
     compile([{last_compile_time, auto}]).
 
 compile(Opts) ->
-    erlyweb:compile(?APP_PATH,
+    erlyweb:compile(compile_dir(auto),
 		    [{erlydb_driver, mysql}, {erlydb_timeout, 20000} | Opts]).
+
+compile_dir(Dir) ->
+    case Dir of
+        auto -> {ok, CWD} = file:get_cwd(), CWD;
+        default -> ?APP_PATH;
+        _ -> Dir
+    end.
 
 init_mnesia() ->
     ?L("creating schema"),
