@@ -7,12 +7,22 @@
     <description><% Description %></description>
     <language>en-us</language>
     <ttl>40</ttl>
-    <% items(Items) %>
+    <% rss_items(Items) %>
   </channel>
 </rss>
 
-<%@ items([]) %>
-<%@ items([Item | Rest]) %>
+<%@ catch_all({atom, Title, Link, Description, Items}) %>
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
+    <title><% Title %></title>
+    <id>tag:twoorl.com:statuses:user</id>
+    <link rel="alternate" href="<% Link %>" type="text/html"/>
+    <subtitle><% Description %></subtitle>
+    <% atom_items(Items) %>
+</feed>
+
+<%@ rss_items([]) %>
+<%@ rss_items([Item | Rest]) %>
 <item>
   <title><% Item(title) %></title>
   <description><% Item(description) %></description>
@@ -20,4 +30,15 @@
   <guid><% Item(guid) %></guid>
   <link><% Item(link) %></link>
 </item>
-<% items(Rest) %>
+<% rss_items(Rest) %>
+<%@ atom_items([]) %>
+<%@ atom_items([Item | Rest]) %>
+    <entry>
+        <title><% Item(title) %></title>
+        <content type="html"><% Item(htmldescription) %></content>
+        <id>tag:twoorl.com,<% Item(pubdate) %>:<% Item(link) %></id>
+        <published><% Item(pubdate) %></published>
+        <updated><% Item(pubdate) %></updated>
+        <link rel="alternate" href="<% Item(link) %>" type="text/html"/>
+    </entry>
+<% atom_items(Rest) %>

@@ -24,16 +24,15 @@
 -module(feeds_controller).
 -export([catch_all/2]).
 
-catch_all(A, ["main", "rss"]) ->
+catch_all(A, ["main", Type]) ->
     Messages = msg:find_with([{order_by, {created_on, desc}}, {limit, 20}]),
-    {data, {rss,
+    {data, {list_to_atom(Type),
 	    <<"Twoorl / Everyone">>,
 	    <<"http://twoorl.com/main">>,
 	    <<"Latest twoorls from everyone">>,
 	    get_funs(A, Messages)}};
 
-
-catch_all(A, ["users", Username, "rss"]) ->
+catch_all(A, ["users", Username, Type]) ->
      case usr:find_first({username,'=',Username}) of
 	 undefined ->
 	     exit({no_such_user, Username});
@@ -42,18 +41,40 @@ catch_all(A, ["users", Username, "rss"]) ->
 			  {usr_id,in, [Usr:id()]},
 			  [{order_by, {created_on, desc}}, {limit, 20}]),
 			 
-	     {data, {rss,
+	     {data, {list_to_atom(Type),
 		     [<<"Twoorl / ">>, Username],
 		     [<<"http://twoorl.com/users/">>, Username],
 		     [Username, <<"'s latest twoorls">>],
 		     get_funs(A, Messages)}}
      end.
 
+catch_all(A, ["friends", Username, Type]) ->
+    case usr:find_first({username,'=',Username}) of
+        undefined ->
+            exit({no_such_user, Username});
+        Usr ->
+            Ids = usr:get_timeline_usr_ids(Usr),
+            Messages = msg:find(
+            {usr_id,in, [Ids]},
+            [{order_by, {created_on, desc}}, {limit, 20}]),
+            {data, {list_to_atom(Type),
+                [<<"Twoorl / ">>, Username],
+                [<<"http://twoorl.com/users/">>, Username],
+                [Username, <<"'s friend's latest twoorls">>],
+                get_funs(A, Messages)}
+            }
+    end.
+
+catch_all(A, _) ->
+    catch_all(A, ["main", "rss"]);
+
 get_funs(A, Messages) ->
     [fun(title) ->
 	     [M:usr_username(), $:, 32, M:body_nolinks()];
 	(description) ->
 	     [M:usr_username(), $:, 32, M:body_nolinks()];
+ 	(htmldescription) ->
+ 	     [M:usr_username(), $:, 32, M:body_nolinks()];
 	(pubdate) ->
 	     twoorl_util:format_datetime(element(2,M:created_on()));
 	(guid) ->
@@ -61,5 +82,3 @@ get_funs(A, Messages) ->
 	(link) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
-	  
-
