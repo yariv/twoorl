@@ -16,6 +16,7 @@
 <%@ msg(password_mismatch) %>the password verification didn't match
 <%@ msg(twitter_unauthorized) %>Twitter rejected the username/password combination you provided
 <%@ msg(twitter_authorization_error) %>Couldn't connect to Twitter. Please try again later.
+<%@ msg({invalid_url, Fieldname}) %>The <% Fieldname %> URL must start with 'http://'.
 
 <%@ msg({updated, {Field, plural}}) %><% Field %> have been updated successfully
 <%@ msg({updated, Field}) %><% Field %> has been updated successfully

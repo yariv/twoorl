@@ -49,10 +49,11 @@ start(A) ->
 		      end,
 	    A3 = yaws_arg:appmoddata(A2, Appmod1),
 	    {phased, {ewc, A3},
-	     fun(_Ewc, Data, _PhasedVars) ->
+	     fun(_Ewc, Data, PhasedVars) ->
 		     {ewc, html_container,
 		      [A3,
-		       {ewc, layout, [A3, {data, Data}]}]}
+		       {ewc, layout, [A3, {data, Data}]},
+		       proplists:get_value(background, PhasedVars)]}
 	     end}
     end.
 

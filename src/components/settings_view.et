@@ -10,9 +10,9 @@
       <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
   </div>
   <div class="section">
-    <div class="t3">Background</div>
-    <div>Custom background URL:</div>
-    <div><input size="75" name="background" value="<% Background %>"/></div>
+    <div class="t3">Profile background</div>
+    <div>Enter the url for your profile background image (leave blank to use the default background):</div>
+    <div><input size="40" name="background" value="<% Background %>"/></div>
   </div>
   <div class="section">
     <div class="t3">Twitter</div>
@@ -24,7 +24,11 @@
       <div>Twitter password: </div>
       <div><input name="twitter_password" type="password" value="<% TwitterPassword %>"/></div>
       <div>Automatically post my Twoorls to Twitter? <input type="checkbox" name="twitter_enabled" <% TwitterEnabledChecked %>/></div>
-      <div><input type="submit" value="submit"/></div>
     </div>
+  </div>
+  <div class="section">
+    <div><input type="submit" value="submit"/></div>
+  </div>
+
 </form>
 

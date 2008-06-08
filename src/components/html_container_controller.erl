@@ -19,21 +19,17 @@
 %% @copyright Yariv Sadan, 2008
 
 -module(html_container_controller).
--export([private/0, index/2]).
+-export([private/0, index/3]).
+-include("twoorl.hrl").
 
 private() ->
-	true.
+    true.
 
-index(A, Ewc) ->
-    Usr = twoorl_util:get_usr(A),
-    [{data, if Usr =/= undefined ->
-            Background = Usr:background(),
-            if Background =/= undefined ->
-                Background;
-            true ->
-                "/static/bg1.jpg"
-            end;
-	    true ->
-		   "/static/bg1.jpg"
-	    end},
-	  Ewc].
+index(A, Ewc, Background) ->
+    Background1 = case Background of
+		      undefined ->
+			  ?DEFAULT_BACKGROUND;
+		      Bg ->
+			  Bg
+		  end,
+    [{data, Background1}, Ewc].

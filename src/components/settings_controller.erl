@@ -7,7 +7,6 @@ index(A) ->
 
 
 process_request(A, Usr) ->
-
     case yaws_arg:method(A) of
 	'POST' ->
 	    Params = yaws_api:parse_post(A),
@@ -23,9 +22,14 @@ process_request(A, Usr) ->
 		  ValidationFun),
 	    Errs1 = verify_twitter_credentials(
 		      TwitterEnabled, TwitterUsername, TwitterPassword),
-	    Errs2 = Errs ++ Errs1,
+	    Errs2 = case Background of
+			undefined -> Errs1;
+			"http://" ++ _ -> Errs1;
+			_ -> [{invalid_url, <<"background image">>} | Errs1]
+		    end,
+	    Errs3 = Errs ++ Errs2,
 	    Messages =
-		case Errs2 of
+		case Errs3 of
 		    [] ->
 			Usr2 =
 			    update_settings(
@@ -33,12 +37,12 @@ process_request(A, Usr) ->
 			      TwitterEnabled, GravatarEnabled, Background),
 			twoorl_util:update_session(A,Usr2),
 			[{updated, {<<"Your settings">>, plural}}];
-
 		    _ ->
 			[]
 		end,
 	    {data, {TwitterUsername, TwitterPassword,
-		    checked(TwitterEnabled), checked(GravatarEnabled), Background, Errs2,
+		    checked(TwitterEnabled), checked(GravatarEnabled),
+		    str(Background), Errs3,
 		    Messages}};
 	_ ->
 	    {data, {str(usr:twitter_username(Usr)),
