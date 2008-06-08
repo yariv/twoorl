@@ -1,0 +1,1 @@
+alter table msg add column body_nolinks text null;
