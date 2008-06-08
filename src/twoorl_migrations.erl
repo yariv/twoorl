@@ -14,12 +14,8 @@ m6() ->
 	      {Body1, BodyNoLinks, Names} =
 		  msg:process_raw_body(BodyRaw),
 	      HasLinks = regexp:matches(BodyRaw, Re) =/= {match, []},
-	      if HasLinks orelse Names =/= [] ->
-		      msg:update([{body_nolinks, lists:flatten(BodyNoLinks)},
-				  {body, lists:flatten(Body1)}], {id,'=',Msg:id()});
-		 true ->
-		      ok
-	      end,
+	      msg:update([{body_nolinks, lists:flatten(BodyNoLinks)},
+			  {body, lists:flatten(Body1)}], {id,'=',Msg:id()}),
 	      if HasLinks ->
 		      receive
 			  after 1000 -> ok
