@@ -1,6 +1,5 @@
 erl_crash.dump
 Mnesia.nonode@nohost/
-src/twoorl_app.hrl
 *.beam
 *.access
 *.log
