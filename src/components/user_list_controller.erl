@@ -66,6 +66,6 @@ show(A, Usr, IsFollowing, Users) ->
 	 _ ->
 	     UserIconEwcs = 
 		 [{ewc, user_icon, [A, Usr1]} || Usr1 <- Users], 
-	     {ewc, grid, [A, UserIconEwcs, 10]}
+	     {ewc, grid, [A, UserIconEwcs, 7]}
      end].
     
