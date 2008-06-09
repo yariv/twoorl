@@ -44,7 +44,7 @@ catch_all(A, ["users", Username, "rss"]) ->
 			 
 	     {data, {rss,
 		     [<<"Twoorl / ">>, Username],
-		     [<<"http://twoorl.com/users/">>, Username],
+		     [<<"http://twoorl.com/">>, Username],
 		     [Username, <<"'s latest twoorls">>],
 		     get_funs(A, Messages)}}
      end.

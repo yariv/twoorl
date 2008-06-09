@@ -26,8 +26,17 @@ hook(A) ->
     A1 = normalize_appmoddata(A),
     case erlyweb:get_initial_ewc({ewc, A1}) of
 	{page, "/"} -> start(A1);
-	{page, _} = Ewc -> Ewc;
-	_Ewc -> start(A1)
+	{page, "/static" ++ _} = Ewc -> Ewc;
+	{page, [$/ | Username]} ->
+	    A2 = yaws_arg:appmoddata(A1, "/users/" ++ Username),
+	    start(A2);
+
+	%% redirect user urls from "/users/[Username]" to "/[Username]"
+	{ewc, users_controller, users_view, catch_all,
+	 [_, [Username]]} ->
+	    {response, [{redirect_local, {any_path, [$/|Username]}, 301}]};
+	Ewc ->
+	    start(A1)
     end.
 
 start(A) ->

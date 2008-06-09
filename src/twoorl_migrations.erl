@@ -11,7 +11,7 @@ m6() ->
       fun(Msg) ->
 	      BodyRaw = binary_to_list(msg:body_raw(Msg)),
 	      ?L(BodyRaw),
-	      {Body1, BodyNoLinks, Names} =
+	      {Body1, BodyNoLinks, _Names} =
 		  msg:process_raw_body(BodyRaw),
 	      HasLinks = regexp:matches(BodyRaw, Re) =/= {match, []},
 	      msg:update([{body_nolinks, lists:flatten(BodyNoLinks)},
@@ -24,3 +24,16 @@ m6() ->
 		      ok
 	      end
       end, Msgs).
+
+%% change user urls from /users/[Username] to /[Username]
+m8() ->
+    Msgs = msg:find(),
+    {ok, Re} = regexp:parse("/users/"),
+    lists:foreach(
+      fun(Msg) ->
+	      Body = binary_to_list(Msg:body()),
+	      {ok, Body1, _N} = regexp:gsub(Body, Re, "/"),
+	      
+	      msg:update([{body, Body1}], {id,'=',Msg:id()})
+      end, Msgs).
+    
