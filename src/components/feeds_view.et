@@ -38,6 +38,7 @@
   <link><% Item(link) %></link>
 </item>
 <% rss_items(Rest) %>
+
 <%@ atom_items([]) %>
 <%@ atom_items([Item | Rest]) %>
     <entry>
@@ -49,6 +50,7 @@
         <link rel="alternate" href="<% Item(link) %>" type="text/html"/>
     </entry>
 <% atom_items(Rest) %>
+
 <%@ json_items([], _) %>
 <%@ json_items([Item | Rest], 0) %>
   { "date": "<% Item(pubdate) %>", "message": "<% Item(title) %>", "link": "<% Item(link) %>"} <% json_items(Rest, 1) %>
