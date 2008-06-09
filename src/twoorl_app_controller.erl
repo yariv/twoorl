@@ -62,7 +62,7 @@ start(A) ->
 		     {ewc, html_container,
 		      [A3,
 		       {ewc, layout, [A3, {data, Data}]},
-		       proplists:get_value(background, PhasedVars)]}
+		       PhasedVars]}
 	     end}
     end.
 

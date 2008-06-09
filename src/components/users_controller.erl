@@ -48,5 +48,9 @@ catch_all(A, [Username]) ->
 		{ewc, timeline, show, [A, [Usr:id()],
 				       [{big_first, true},
 					{hide_user, true}]]}]},
-	      {phased_vars, [{background, Usr:background()}]}]}
+	      {phased_vars, [{background, Usr:background()},
+			     {header_items,
+			      [{feed_link, <<"rss+xml">>,
+				[Username, <<" (RSS)">>],
+				usr:get_feed_url(Usr, <<"rss">>)}]}]}]}
     end.

@@ -22,4 +22,9 @@
 -compile(export_all).
 
 index(A) ->
-    {ewc, timeline, show, [A]}.
+    {response,[{body, {ewc, timeline, show, [A]}},
+	       {phased_vars,
+		[{header_items,
+		  [{feed_link, <<"rss+xml">>,
+		    <<"Twoorl / Everyone (RSS)">>,
+		    <<"/feeds/main/rss">>}]}]}]}.

@@ -25,11 +25,15 @@
 private() ->
     true.
 
-index(A, Ewc, Background) ->
-    Background1 = case Background of
+index(A, Ewc, PhasedVars) ->
+    Background = case proplists:get_value(background, PhasedVars) of
 		      undefined ->
 			  ?DEFAULT_BACKGROUND;
 		      Bg ->
 			  Bg
 		  end,
-    [{data, Background1}, Ewc].
+    HeaderItems = case proplists:get_value(header_items, PhasedVars) of
+		      undefined -> [];
+		      Other -> Other
+		  end,
+    [{data, {Background, HeaderItems}}, Ewc].

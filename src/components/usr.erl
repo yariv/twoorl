@@ -35,3 +35,8 @@ get_timeline_usr_ids(Usr) ->
     Followings = following:find({usr_id1,'=',Usr:id()}),
     FollowingIds = [Following:usr_id2() || Following <- Followings],
     [Usr:id() | FollowingIds].
+
+get_feed_url(Usr, Format) ->
+    [<<"/feeds/users/">>, Usr:username(), $/, Format].
+    
+    
