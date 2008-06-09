@@ -356,5 +356,5 @@ mon(N) ->
 		  end.
 
 
-
-	    
+get_feed_link(Url, Format) ->
+    erlyweb_html:a([Url], Format, [{"class", "feed_link"}]).

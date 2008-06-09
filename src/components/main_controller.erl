@@ -22,9 +22,11 @@
 -compile(export_all).
 
 index(A) ->
-    {response,[{body, {ewc, timeline, show, [A]}},
+    FeedUrl = <<"/feeds/main/rss">>,
+    {response,[{body, [{data, twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)},
+		       {ewc, timeline, show, [A]}]},
 	       {phased_vars,
 		[{header_items,
 		  [{feed_link, <<"rss+xml">>,
 		    <<"Twoorl / Everyone (RSS)">>,
-		    <<"/feeds/main/rss">>}]}]}]}.
+		    FeedUrl}]}]}]}.

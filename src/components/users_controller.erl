@@ -42,9 +42,11 @@ catch_all(A, [Username]) ->
 				Following == undefined
 			end
 		end,
+	    FeedUrl = usr:get_feed_url(Usr, <<"rss">>),
 	    {response,
 	     [{body,
-	       [{data, {Username, ToFollow, usr:get_gravatar_icon(Usr)}},
+	       [{data, {Username, ToFollow, usr:get_gravatar_icon(Usr),
+			twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)}},
 		{ewc, timeline, show, [A, [Usr:id()],
 				       [{big_first, true},
 					{hide_user, true}]]}]},
@@ -52,5 +54,5 @@ catch_all(A, [Username]) ->
 			     {header_items,
 			      [{feed_link, <<"rss+xml">>,
 				[Username, <<" (RSS)">>],
-				usr:get_feed_url(Usr, <<"rss">>)}]}]}]}
+				FeedUrl}]}]}]}
     end.
