@@ -7,13 +7,13 @@ index(A) ->
 
 
 process_request(A, Usr) ->
-
     case yaws_arg:method(A) of
 	'POST' ->
 	    Params = yaws_api:parse_post(A),
 	    TwitterEnabled = is_checked("twitter_enabled", Params),
 	    GravatarEnabled = is_checked("gravatar_enabled", Params),
 	    ValidationFun = get_validation_fun(TwitterEnabled),
+	    Background = proplists:get_value("background", Params),
 	    
 	    {[TwitterUsername, TwitterPassword], Errs} =
 		erlyweb_forms:validate(
@@ -22,28 +22,34 @@ process_request(A, Usr) ->
 		  ValidationFun),
 	    Errs1 = verify_twitter_credentials(
 		      TwitterEnabled, TwitterUsername, TwitterPassword),
-	    Errs2 = Errs ++ Errs1,
+	    Errs2 = case Background of
+			undefined -> Errs1;
+			"http://" ++ _ -> Errs1;
+			_ -> [{invalid_url, <<"background image">>} | Errs1]
+		    end,
+	    Errs3 = Errs ++ Errs2,
 	    Messages =
-		case Errs2 of
+		case Errs3 of
 		    [] ->
 			Usr2 =
 			    update_settings(
 			      Usr, TwitterUsername, TwitterPassword,
-			      TwitterEnabled, GravatarEnabled),
+			      TwitterEnabled, GravatarEnabled, Background),
 			twoorl_util:update_session(A,Usr2),
 			[{updated, {<<"Your settings">>, plural}}];
-
 		    _ ->
 			[]
 		end,
 	    {data, {TwitterUsername, TwitterPassword,
-		    checked(TwitterEnabled), checked(GravatarEnabled), Errs2,
+		    checked(TwitterEnabled), checked(GravatarEnabled),
+		    str(Background), Errs3,
 		    Messages}};
 	_ ->
 	    {data, {str(usr:twitter_username(Usr)),
 		    str(usr:twitter_password(Usr)),
 		    checked(usr:twitter_enabled(Usr)),
 		    checked(usr:gravatar_enabled(Usr)),
+		    str(usr:background(Usr)),
 		    [],
 		    []}}
     end.
@@ -90,13 +96,14 @@ verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->
     end.
 
 update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
-	  GravatarEnabled) ->
+	  GravatarEnabled, Background) ->
     Usr1 = usr:set_fields(
 	    Usr,
 	    [{twitter_username, TwitterUsername},
 	     {twitter_password, TwitterPassword},
 	     {twitter_enabled, bool_to_int(TwitterEnabled)},
-	     {gravatar_enabled, bool_to_int(GravatarEnabled)}]),
+	     {gravatar_enabled, bool_to_int(GravatarEnabled)},
+	     {background, Background}]),
     Usr2 = Usr1:save(),
     LastGravatarStatus = Usr:gravatar_enabled(),
     if GravatarEnabled == LastGravatarStatus ->

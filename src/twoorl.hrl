@@ -9,12 +9,14 @@
 -define(PAGING_WINDOW, 3).
 -define(MAX_TWOORL_LEN, 140).
 -define(MAX_MSG_SIZE, 10000).
+-define(FOLLOWING_PAGE_SIZE, 40).
 
 -define(TWITTER_NOT_SENT, 0).
 -define(TWITTER_SENT_PENDING, 1).
 -define(TWITTER_SENT_OK, 2).
 -define(TWITTER_SENT_ERR, 3).
 -define(DEFAULT_GRAVATAR_ID, <<"98dbdc9e0d214030d3ee1c77c502248f">>).
+-define(DEFAULT_BACKGROUND, <<"/static/bg1.jpg">>).
 
 -define(Debug(Msg, Params),
 	twoorl_util:log(?MODULE, ?LINE, debug, fun() -> {Msg, Params} end)).

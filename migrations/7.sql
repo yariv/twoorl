@@ -1,0 +1,1 @@
+alter table usr add column background varchar(255) null;

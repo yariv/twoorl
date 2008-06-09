@@ -17,23 +17,22 @@
 %%
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
 %% @copyright Yariv Sadan, 2008
-
--module(html_container_controller).
--export([private/0, index/3]).
--include("twoorl.hrl").
+-module(grid_controller).
+-export([private/0, index/2, index/3]).
 
 private() ->
     true.
 
-index(_A, Ewc, PhasedVars) ->
-    Background = case proplists:get_value(background, PhasedVars) of
-		      undefined ->
-			  ?DEFAULT_BACKGROUND;
-		      Bg ->
-			  Bg
-		  end,
-    HeaderItems = case proplists:get_value(header_items, PhasedVars) of
-		      undefined -> [];
-		      Other -> Other
-		  end,
-    [{data, {Background, HeaderItems}}, Ewc].
+index(A, Cells) ->
+    index(A, Cells, 3).
+
+index(_A, Cells, NumCols) ->
+    {_, Rows1} =
+	lists:foldl(
+	  fun(Cell, {N, [Hd | Tl]}) when N == NumCols ->
+		  {1, [[Cell] |
+		       [lists:reverse(Hd) | Tl]]};
+	     (Cell, {N, [Hd | Tl]}) ->
+		  {N+1, [[Cell | Hd] | Tl]}
+	  end, {0, [[]]}, Cells),
+    lists:reverse(Rows1).

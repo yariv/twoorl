@@ -1,10 +1,16 @@
-<%@ index(Data) %>
+<%@ index([{Background, HeaderItems}, Data]) %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Twoorl</title>
   <link rel="stylesheet" href="/static/style.css" type="text/css"/>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+  <style>
+    body {
+      background-image: url('<% Background %>');
+    }
+  </style>
+  <% [header_item(I) || I <- HeaderItems] %>
 </head>
 
 <body>
@@ -17,3 +23,5 @@
 <% twoorl_snippets:google_analytics() %>
 </body>
 </html>
+
+<%@ header_item({feed_link, Format, Title, Href}) %> <link rel="alternate" type="application/<% Format %>" title="<% Title %>" href="<% Href %>"/>

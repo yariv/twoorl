@@ -96,7 +96,7 @@ send(A) ->
       end).
 
 save_replies(MsgId, RecipientNames) ->
-    RecipientNames1 = [tl(Name) || Name <- RecipientNames],
+    RecipientNames1 = [Name || Name <- RecipientNames],
     Recipients = 
 	usr:find({username, in, lists:usort(RecipientNames1)}),
     

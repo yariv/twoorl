@@ -1,7 +1,7 @@
-<%@ catch_all({no_such_user, Username})%>
+<%@ catch_all({no_such_user, Username, RssLink})%>
 The user '<% Username %>' doesn't exist.
 
-<%@ catch_all([{Username, ToFollow, Gravatar}, Data]) %>
+<%@ catch_all([{Username, ToFollow, Gravatar, FeedLink}, Data]) %>
 <div class="header1">
   <table>
     <tr>
@@ -17,6 +17,8 @@ The user '<% Username %>' doesn't exist.
     true -> [] end %>
 </div>
 <% Data %>
+<br/>
+<% FeedLink %>
 
 <%@ to_follow(Val, Username) %>
 <div class="follow_button">

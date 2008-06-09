@@ -20,6 +20,7 @@
 
 -module(users_controller).
 -compile(export_all).
+-include("twoorl.hrl").
 
 catch_all(A, [Username]) ->
     case usr:find_first({username,'=',Username}) of
@@ -41,8 +42,17 @@ catch_all(A, [Username]) ->
 				Following == undefined
 			end
 		end,
-	    [{data, {Username, ToFollow, usr:get_gravatar_icon(Usr)}},
-	     {ewc, timeline, show, [A, [Usr:id()],
-				    [{big_first, true},
-				     {hide_user, true}]]}]
+	    FeedUrl = usr:get_feed_url(Usr, <<"rss">>),
+	    {response,
+	     [{body,
+	       [{data, {Username, ToFollow, usr:get_icon(Usr),
+			twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)}},
+		{ewc, timeline, show, [A, [Usr:id()],
+				       [{big_first, true},
+					{hide_user, true}]]}]},
+	      {phased_vars, [{background, Usr:background()},
+			     {header_items,
+			      [{feed_link, <<"rss+xml">>,
+				[Username, <<" (RSS)">>],
+				FeedUrl}]}]}]}
     end.

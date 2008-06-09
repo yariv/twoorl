@@ -4,6 +4,5 @@
 -define(DB_PASSWORD, "asd123").
 -define(DB_DATABASE, "twoorl").
 -define(DB_POOL_SIZE, 50).
-%-define(APP_PATH, "/home/yariv/apps/twoorl/trunk/twoorl").
+%-define(APP_PATH, "/home/yariv/apps//twoorl").
 -define(APP_PATH, "/Users/yariv/apps/twoorl").
-

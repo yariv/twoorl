@@ -18,22 +18,12 @@
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
 %% @copyright Yariv Sadan, 2008
 
--module(html_container_controller).
--export([private/0, index/3]).
--include("twoorl.hrl").
+-module(user_icon_controller).
+-compile(export_all).
 
 private() ->
     true.
 
-index(_A, Ewc, PhasedVars) ->
-    Background = case proplists:get_value(background, PhasedVars) of
-		      undefined ->
-			  ?DEFAULT_BACKGROUND;
-		      Bg ->
-			  Bg
-		  end,
-    HeaderItems = case proplists:get_value(header_items, PhasedVars) of
-		      undefined -> [];
-		      Other -> Other
-		  end,
-    [{data, {Background, HeaderItems}}, Ewc].
+index(A, Usr) ->
+    {data, {usr:get_link(Usr),
+	    usr:get_icon(Usr, true)}}.

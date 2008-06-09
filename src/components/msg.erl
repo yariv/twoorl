@@ -49,7 +49,7 @@ add_reply_links(Body) ->
     {Body1, Changes} = 
 	replace_matches(
 	  Body, Re, fun([_ | Name] = Val) ->
-			    {twoorl_util:user_link(Name, Val, list), Val}
+			    {usr:get_link(Name, Val, list), Val}
 		    end),
     {Body1, [Match || {[_|Match], _Replacement} <- Changes]}.
 	      
@@ -81,4 +81,17 @@ add_tinyurl_links(Body) ->
 replace_matches(Body, Matches, Fun) ->
     twoorl_util:replace_matches(Body, Matches, Fun, ?MAX_TWOORL_LEN).
 
+get_gravatar_id(Msg) ->
+    case Msg:usr_gravatar_enabled() of
+	1 ->
+	    case Msg:usr_gravatar_id() of
+		undefined ->
+		    ?DEFAULT_GRAVATAR_ID;
+		Other ->
+		    Other
+	    end;
+	0 ->
+	    ?DEFAULT_GRAVATAR_ID
+    end.
 
+    

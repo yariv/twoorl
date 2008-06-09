@@ -28,7 +28,7 @@ catch_all(_A, [_Username, Id]) ->
 	undefined ->
 	    exit({not_found, Id});
 	Msg ->
-	    {data, {twoorl_util:user_link(Msg:usr_username()),
+	    {data, {usr:get_link(Msg:usr_username()),
 		    Msg:body(),
 		    Msg:get_time_since()}}
     end.

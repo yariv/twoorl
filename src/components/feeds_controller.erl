@@ -26,11 +26,11 @@
 
 catch_all(A, ["main", Type]) ->
     Messages = msg:find_with([{order_by, {created_on, desc}}, {limit, 20}]),
-    {data, {list_to_atom(Type),
+    return(Type, {Type,
 	    <<"Twoorl / Everyone">>,
 	    <<"http://twoorl.com/main">>,
 	    <<"Latest twoorls from everyone">>,
-	    get_funs(A, Messages)}};
+	    get_funs(A, Messages)});
 
 catch_all(A, ["users", Username, Type]) ->
     case usr:find_first({username,'=',Username}) of
@@ -41,7 +41,7 @@ catch_all(A, ["users", Username, Type]) ->
                 {usr_id,in, [Usr:id()]},
                 [{order_by, {created_on, desc}}, {limit, 20}]
             ),
-            {data, {list_to_atom(Type),
+            return(Type, {Type,
                 [<<"Twoorl / ">>, Username],
                 [<<"http://twoorl.com/users/">>, Username],
                 [Username, <<"'s latest twoorls">>],
@@ -59,7 +59,7 @@ catch_all(A, ["friends", Username, Type]) ->
                 {usr_id,in, [Ids]},
                 [{order_by, {created_on, desc}}, {limit, 20}]
             ),
-            {data, {list_to_atom(Type),
+            return(Type, {Type,
                 [<<"Twoorl / ">>, Username],
                 [<<"http://twoorl.com/users/">>, Username],
                 [Username, <<"'s friend's latest twoorls">>],
@@ -85,6 +85,19 @@ get_funs(A, Messages) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
 
+return("json", Val) where ->
+    {response, [{body, {data, Val}},
+		{header, {content_type, rfc4627:mime_type()}}]}.
+
+return("atom", Val) where ->
+   {response, [{body, {data, Val}},
+	{header, {content_type, "application/atom+xml"}}]}.
+
+return("atom", Val) where ->
+   {response, [{body, {data, Val}},
+	{header, {content_type, "application/xml"}}]}.
+
+
 json_encode(Usr, Messages) ->
     JsonData = {obj, [
         {"user", Usr:Username()},
@@ -94,12 +107,16 @@ json_encode(Usr, Messages) ->
         [
             {"user", "ngerakines"},
             {"id", "1233"},
-            {"status",
+            {"status", [
                 {obj, [
                     {"date","today"},
                     {"message", "Man I feel sick."}
+                ]},
+                {obj, [
+                    {"date","yesterday"},
+                    {"message", "Hmm, I might be getting sick."}
                 ]}
-            }
+            ]}
         ]
     }.
     {data, rfc4627:encode(Obj1)}.
