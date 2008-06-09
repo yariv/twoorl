@@ -26,11 +26,12 @@
 
 catch_all(A, ["main", "rss"]) ->
     Messages = msg:find_with([{order_by, {created_on, desc}}, {limit, 20}]),
-    {data, {rss,
+    
+    return({rss,
 	    <<"Twoorl / Everyone">>,
 	    <<"http://twoorl.com/main">>,
 	    <<"Latest twoorls from everyone">>,
-	    get_funs(A, Messages)}};
+	    get_funs(A, Messages)});
 
 
 catch_all(A, ["users", Username, "rss"]) ->
@@ -42,11 +43,11 @@ catch_all(A, ["users", Username, "rss"]) ->
 			  {usr_id,in, [Usr:id()]},
 			  [{order_by, {created_on, desc}}, {limit, 20}]),
 			 
-	     {data, {rss,
+	     return({rss,
 		     [<<"Twoorl / ">>, Username],
 		     [<<"http://twoorl.com/">>, Username],
 		     [Username, <<"'s latest twoorls">>],
-		     get_funs(A, Messages)}}
+		     get_funs(A, Messages)})
      end.
 
 get_funs(A, Messages) ->
@@ -61,5 +62,9 @@ get_funs(A, Messages) ->
 	(link) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
+
+return(Val) ->
+    {response, [{body, {data, Val}},
+		{header, {content_type, "text/xml"}}]}.
 	  
 

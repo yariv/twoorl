@@ -25,7 +25,7 @@
 private() ->
     true.
 
-index(A, Ewc, PhasedVars) ->
+index(_A, Ewc, PhasedVars) ->
     Background = case proplists:get_value(background, PhasedVars) of
 		      undefined ->
 			  ?DEFAULT_BACKGROUND;
