@@ -33,19 +33,21 @@ catch_all(A, ["main", Type]) ->
 	    get_funs(A, Messages)}};
 
 catch_all(A, ["users", Username, Type]) ->
-     case usr:find_first({username,'=',Username}) of
-	 undefined ->
-	     exit({no_such_user, Username});
-	 Usr ->
-	     Messages = msg:find(
-			  {usr_id,in, [Usr:id()]},
-			  [{order_by, {created_on, desc}}, {limit, 20}]),
-	     {data, {list_to_atom(Type),
-		     [<<"Twoorl / ">>, Username],
-		     [<<"http://twoorl.com/users/">>, Username],
-		     [Username, <<"'s latest twoorls">>],
-		     get_funs(A, Messages)}}
-     end;
+    case usr:find_first({username,'=',Username}) of
+        undefined ->
+            exit({no_such_user, Username});
+        Usr ->
+            Messages = msg:find(
+                {usr_id,in, [Usr:id()]},
+                [{order_by, {created_on, desc}}, {limit, 20}]
+            ),
+            {data, {list_to_atom(Type),
+                [<<"Twoorl / ">>, Username],
+                [<<"http://twoorl.com/users/">>, Username],
+                [Username, <<"'s latest twoorls">>],
+                get_funs(A, Messages)}
+            }
+    end;
 
 catch_all(A, ["friends", Username, Type]) ->
     case usr:find_first({username, '=', Username}) of
@@ -82,3 +84,22 @@ get_funs(A, Messages) ->
 	(link) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
+
+json_encode(Usr, Messages) ->
+    JsonData = {obj, [
+        {"user", Usr:Username()},
+        {"statuses"}
+    ]},
+    Obj1 = {obj,
+        [
+            {"user", "ngerakines"},
+            {"id", "1233"},
+            {"status",
+                {obj, [
+                    {"date","today"},
+                    {"message", "Man I feel sick."}
+                ]}
+            }
+        ]
+    }.
+    {data, rfc4627:encode(Obj1)}.
