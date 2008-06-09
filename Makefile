@@ -6,6 +6,9 @@ code: clean
 clean:
 	rm -fv ebin/*.beam twoorl.rel twoorl.script twoorl.boot erl_crash.dump *.log *.access
 
+init:
+	erl -mnesia dir "'twoorl.mnesia'" -s make all load -run twoorl init_mnesia -s init stop
+
 cleandb:
 	rm -rfv *.mnesia Mnesia*
 
