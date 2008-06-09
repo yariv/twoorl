@@ -56,7 +56,8 @@ show_related(A, Username, IsFollowing) ->
 		       {ewc, user_list, show,
 			[A, Usr, IsFollowing, Users]}
 	       end,
-	       [{total, Total}]]}}
+	       [{total, Total},
+		{page_size, ?FOLLOWING_PAGE_SIZE}]]}}
     end.
 
 show(A, Usr, IsFollowing, Users) ->
@@ -66,6 +67,6 @@ show(A, Usr, IsFollowing, Users) ->
 	 _ ->
 	     UserIconEwcs = 
 		 [{ewc, user_icon, [A, Usr1]} || Usr1 <- Users], 
-	     {ewc, grid, [A, UserIconEwcs, 6]}
+	     {ewc, grid, [A, UserIconEwcs, 5]}
      end].
     

@@ -9,6 +9,7 @@
 -define(PAGING_WINDOW, 3).
 -define(MAX_TWOORL_LEN, 140).
 -define(MAX_MSG_SIZE, 10000).
+-define(FOLLOWING_PAGE_SIZE, 40).
 
 -define(TWITTER_NOT_SENT, 0).
 -define(TWITTER_SENT_PENDING, 1).
