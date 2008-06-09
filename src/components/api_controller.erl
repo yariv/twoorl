@@ -99,13 +99,9 @@ save_replies(MsgId, RecipientNames) ->
     RecipientNames1 = [Name || Name <- RecipientNames],
     Recipients = 
 	usr:find({username, in, lists:usort(RecipientNames1)}),
-    
-    Replies =
-	[reply:new_with(
-	   [{usr_id, Recipient:id()},
-	    {msg_id, MsgId}]) || Recipient <-
-					 Recipients],
-    reply:insert(Replies).
+    RecipientIds =
+	[Recipient:id() || Recipient <- Recipients],
+    reply:save_replies(MsgId, RecipientIds).
 
 follow(A) ->
     twoorl_util:auth(

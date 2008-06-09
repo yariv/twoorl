@@ -21,3 +21,11 @@
 -module(reply).
 -compile(export_all).
 
+
+save_replies(MsgId, RecipientIds) ->    
+    Replies =
+	[reply:new_with(
+	   [{usr_id, RecipientId},
+	    {msg_id, MsgId}]) || RecipientId <-
+				     RecipientIds],
+    reply:insert(Replies).

@@ -37,15 +37,14 @@ catch_all(A, ["users", Username, Type]) ->
             exit({no_such_user, Username});
         Usr ->
             Messages = msg:find(
-                {usr_id,in, [Usr:id()]},
-                [{order_by, {created_on, desc}}, {limit, 20}]
-            ),
-            return(Type, {Type,
-                [<<"Twoorl / ">>, Username],
-                [<<"http://twoorl.com/users/">>, Username],
-                [Username, <<"'s latest twoorls">>],
-                get_funs(A, Messages)}
-            )
+			 {usr_id,in, [Usr:id()]},
+			 [{order_by, {created_on, desc}}, {limit, 20}]),
+            return(Type,
+		   {Type,
+		    [<<"Twoorl / ">>, Username],
+		    [<<"http://twoorl.com/users/">>, Username],
+		    [Username, <<"'s latest twoorls">>],
+		    get_funs(A, Messages)})
     end;
 
 catch_all(A, ["friends", Username, Type]) ->
@@ -55,15 +54,15 @@ catch_all(A, ["friends", Username, Type]) ->
         Usr ->
             Ids = usr:get_timeline_usr_ids(Usr),
             Messages = msg:find(
-                {usr_id,in, [Ids]},
-                [{order_by, {created_on, desc}}, {limit, 20}]
-            ),
-            return(Type, {Type,
-                [<<"Twoorl / ">>, Username],
-                [<<"http://twoorl.com/users/">>, Username],
-                [Username, <<"'s friend's latest twoorls">>],
-                get_funs(A, Messages)}
-            )
+			 {usr_id,in, [Ids]},
+			 [{order_by, {created_on, desc}}, {limit, 20}]
+			),
+            return(Type,
+		   {Type,
+		    [<<"Twoorl / ">>, Username],
+		    [<<"http://twoorl.com/users/">>, Username],
+		    [Username, <<"'s friend's latest twoorls">>],
+		    get_funs(A, Messages)})
     end;
 
 catch_all(A, _) ->
@@ -71,29 +70,30 @@ catch_all(A, _) ->
 
 get_funs(A, Messages) ->
     [fun(title) ->
-	     [binary_to_list(M:usr_username()), $:, 32, binary_to_list(M:body_nolinks())];
+	     [M:usr_username(), $:, 32,
+	      M:body_nolinks()];
 	(description) ->
-	     [binary_to_list(M:usr_username()), $:, 32, binary_to_list(M:body_nolinks())];
+	     [M:usr_username(), $:, 32,
+	      M:body_nolinks()];
  	(htmldescription) ->
- 	     [M:usr_username(), $:, 32, binary_to_list(M:body())];
+ 	     [M:usr_username(), $:, 32,
+	      M:body_nolinks()];
 	(pubdate) ->
-	    twoorl_util:format_datetime(element(2,M:created_on()));
+	    twoorl_util:format_datetime(
+	      element(2,M:created_on()));
 	(guid) ->
 	     msg:get_href(A, M, absolute);
 	(link) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
 
-%% XXX: This is totally the wrong way to do this. I added the elib/rfc4627.erl
-%%      module to explore creating rfc valid json from Erlang tuples, lists, etc.
-return("json", Val) ->
-    {response, [{body, {data, Val}},
-        {header, {content_type, "application/json"}}]};
-
-return("atom", Val) ->
-   {response, [{body, {data, Val}},
-	{header, {content_type, "application/atom+xml"}}]};
-
-return("rss", Val) ->
-   {response, [{body, {data, Val}},
-	{header, {content_type, "application/xml"}}]}.
+return(Format, Val) ->
+    ContentType =
+	case Format of
+	    "json" -> "application/json";
+	    "atom" -> "application/atom+xml";
+	    "rss" -> "application/xml"
+	end,
+   {response,
+    [{body, {data, Val}},
+     {header, {content_type, ContentType}}]}.
