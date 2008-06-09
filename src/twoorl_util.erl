@@ -128,17 +128,6 @@ htmlize_l([X|Tail], Ack) when is_list(X) ->
     htmlize_l(Tail, [X2|Ack]).
 
 
-user_link(Username) ->
-    user_link(Username, Username).
-
-user_link(Username, Text) ->
-    user_link(Username, Text, iolist).
-
-user_link(Username, Text, iolist) ->
-    erlyweb_html:a(["", Username], Text);
-user_link(Username, Text, list) ->
-    ["<a href=\"/", Username, "\">", Text, "</a>"].
-
 log(Module, Line, Level, FormatFun) ->
     Func = case Level of
 	       debug ->

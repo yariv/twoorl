@@ -18,20 +18,12 @@
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
 %% @copyright Yariv Sadan, 2008
 
--module(twoorls_controller).
+-module(user_icon_controller).
 -compile(export_all).
 
-catch_all(_A, [_Username, Id]) ->
-    %% currently, we ignore the username, but we keep it as a parameter
-    %% for future user-based sharding
-    case msg:find_id(list_to_integer(Id)) of
-	undefined ->
-	    exit({not_found, Id});
-	Msg ->
-	    {data, {usr:get_link(Msg:usr_username()),
-		    Msg:body(),
-		    Msg:get_time_since()}}
-    end.
-    
-    
-    
+private() ->
+    true.
+
+index(A, Usr) ->
+    {data, {usr:get_link(Usr),
+	    usr:get_icon(Usr, true)}}.

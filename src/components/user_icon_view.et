@@ -1,0 +1,5 @@
+<%@ index({UserLink, GravatarIcon}) %>
+<div class="user_icon">
+  <div><% GravatarIcon %></div>
+  <div><% UserLink %></div>
+</div>

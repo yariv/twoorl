@@ -22,14 +22,25 @@
 -compile(export_all).
 -include("twoorl.hrl").
 
-get_gravatar_icon(Usr) ->
-    case usr:gravatar_enabled(Usr) of
-	1 ->
-	    twoorl_util:gravatar_icon(
-	      twoorl_util:gravatar_id(usr:email(Usr)));
-	0 ->
-	    twoorl_util:gravatar_icon(?DEFAULT_GRAVATAR_ID)
+get_icon(Usr) ->
+    get_icon(Usr, false).
+
+get_icon(Usr, AsLink) ->
+    GravatarId =
+	case usr:gravatar_enabled(Usr) of
+	    1 ->
+		twoorl_util:gravatar_id(usr:email(Usr));
+	    0 ->
+		?DEFAULT_GRAVATAR_ID
+	end,
+    if AsLink ->
+	    get_icon_link(Usr:username(), GravatarId);
+       true ->
+	    twoorl_util:gravatar_icon(GravatarId)
     end.
+
+get_icon_link(Username, GravatarId) ->
+    get_link(Username, twoorl_util:gravatar_icon(GravatarId)).
 
 get_timeline_usr_ids(Usr) ->
     Followings = following:find({usr_id1,'=',Usr:id()}),
@@ -39,4 +50,17 @@ get_timeline_usr_ids(Usr) ->
 get_feed_url(Usr, Format) ->
     [<<"/feeds/users/">>, Usr:username(), $/, Format].
     
-    
+
+get_link(Usr) when is_tuple(Usr) ->
+    get_link(Usr:username());
+get_link(Username) ->
+    get_link(Username, Username).
+
+get_link(Username, Text) ->
+    get_link(Username, Text, iolist).
+
+get_link(Username, Text, iolist) ->
+    [<<"<a href=\"/">>, Username, <<"\">">>, Text, <<"</a>">>];
+get_link(Username, Text, list) ->
+    ["<a href=\"/", Username, "\">", Text, "</a>"].
+

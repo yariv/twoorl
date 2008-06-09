@@ -1,0 +1,15 @@
+<%@ index(Rows) %>
+<table class="grid">
+<% [row(Row) || Row <- Rows] %>
+</table>
+
+<%@ row(Row) %>
+<tr>
+<% cells(Row) %><td class="cell3"></td>
+</tr>
+
+<%@ cells([]) %>
+<%@ cells([Hd]) %>
+<td class="cell2"><% Hd %></td>
+<%@ cells([Hd | Tl]) %>
+<td class="cell1"><% Hd %></td><% cells(Tl) %>

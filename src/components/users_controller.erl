@@ -45,7 +45,7 @@ catch_all(A, [Username]) ->
 	    FeedUrl = usr:get_feed_url(Usr, <<"rss">>),
 	    {response,
 	     [{body,
-	       [{data, {Username, ToFollow, usr:get_gravatar_icon(Usr),
+	       [{data, {Username, ToFollow, usr:get_icon(Usr),
 			twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)}},
 		{ewc, timeline, show, [A, [Usr:id()],
 				       [{big_first, true},

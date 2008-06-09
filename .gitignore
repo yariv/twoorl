@@ -3,3 +3,5 @@ Mnesia.nonode@nohost/
 *.beam
 *.access
 *.log
+#*#
+.#*

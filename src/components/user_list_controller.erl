@@ -25,7 +25,7 @@
 private() ->
     true.
 
-show_related(_A, Username, IsFollowing) ->
+show_related(A, Username, IsFollowing) ->
     case usr:find_first({username,'=',Username}) of
 	undefined ->
 	    exit({no_such_user, Username});
@@ -36,14 +36,36 @@ show_related(_A, Username, IsFollowing) ->
 		   true ->
 			{usr_id2, usr_id1}
 		end,
-	    Followings = following:find(
-			   {Field1,'=',Usr:id()},
-			   {limit, ?MAX_PAGE_SIZE}),
-	    Usr2Ids =
-		[following:Field2(Following) || Following <- Followings],
-	    Usrs = usr:find({id,in,Usr2Ids}),
-	    {data, {Username, IsFollowing,
-		    [twoorl_util:user_link(Usr2:username()) ||
-			Usr2 <- Usrs]}}
+	    
+	    %% TODO cache this data
+	    Total = following:count('*', {Field1,'=',Usr:id()}),
+	    
+	    {replace,
+	     {ewc, paging,
+	      [A,
+	       fun(Limit) ->
+		       following:find(
+			 {Field1,'=',Usr:id()},
+			 Limit)
+	       end,
+	       fun(Followings) ->
+		       Usr2Ids =
+			   [following:Field2(Following) ||
+			       Following <- Followings],
+		       Users = usr:find({id,in,Usr2Ids}),
+		       {ewc, user_list, show,
+			[A, Usr, IsFollowing, Users]}
+	       end,
+	       [{total, Total}]]}}
     end.
+
+show(A, Usr, IsFollowing, Users) ->
+    [{data, {Usr:get_link(), usr:get_icon(Usr, true), IsFollowing}},
+     case Users of
+	 [] -> [];
+	 _ ->
+	     UserIconEwcs = 
+		 [{ewc, user_icon, [A, Usr1]} || Usr1 <- Users], 
+	     {ewc, grid, [A, UserIconEwcs, 10]}
+     end].
     

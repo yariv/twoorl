@@ -17,21 +17,22 @@
 %%
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
 %% @copyright Yariv Sadan, 2008
+-module(grid_controller).
+-export([private/0, index/2, index/3]).
 
--module(twoorls_controller).
--compile(export_all).
+private() ->
+    true.
 
-catch_all(_A, [_Username, Id]) ->
-    %% currently, we ignore the username, but we keep it as a parameter
-    %% for future user-based sharding
-    case msg:find_id(list_to_integer(Id)) of
-	undefined ->
-	    exit({not_found, Id});
-	Msg ->
-	    {data, {usr:get_link(Msg:usr_username()),
-		    Msg:body(),
-		    Msg:get_time_since()}}
-    end.
-    
-    
-    
+index(A, Cells) ->
+    index(A, Cells, 3).
+
+index(_A, Cells, NumCols) ->
+    {_, Rows1} =
+	lists:foldl(
+	  fun(Cell, {N, [Hd | Tl]}) when N == NumCols ->
+		  {1, [[Cell] |
+		       [lists:reverse(Hd) | Tl]]};
+	     (Cell, {N, [Hd | Tl]}) ->
+		  {N+1, [[Cell | Hd] | Tl]}
+	  end, {0, [[]]}, Cells),
+    lists:reverse(Rows1).

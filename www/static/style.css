@@ -153,3 +153,12 @@ fieldset {
   text-align: left;
   color: #999;
 }
+
+.user_icon {
+  text-align: center;
+  padding: 3px;
+}
+
+.paging_content {
+  margin-bottom: 10px
+}
