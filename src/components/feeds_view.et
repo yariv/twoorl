@@ -1,4 +1,4 @@
-<%@ catch_all({rss, Title, Link, Description, Items}) %>
+<%@ catch_all({"rss", Title, Link, Description, Items}) %>
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -11,7 +11,7 @@
   </channel>
 </rss>
 
-<%@ catch_all({atom, Title, Link, Description, Items}) %>
+<%@ catch_all({"atom", Title, Link, Description, Items}) %>
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
     <title><% Title %></title>
@@ -21,6 +21,13 @@
     <% atom_items(Items) %>
 </feed>
 
+<%@ catch_all({"json", Title, Link, Description, Items}) %>
+{"title": "<% Title %>",
+ "link": "<% Link %>",
+ "statuses":[
+<% json_items(Items, 0) %>
+ ]
+}
 <%@ rss_items([]) %>
 <%@ rss_items([Item | Rest]) %>
 <item>
@@ -42,3 +49,8 @@
         <link rel="alternate" href="<% Item(link) %>" type="text/html"/>
     </entry>
 <% atom_items(Rest) %>
+<%@ json_items([], _) %>
+<%@ json_items([Item | Rest], 0) %>
+  { "date": "<% Item(pubdate) %>", "message": "<% Item(title) %>", "link": "<% Item(link) %>"} <% json_items(Rest, 1) %>
+<%@ json_items([Item | Rest], _) %>
+  , { "date": "<% Item(pubdate) %>", "message": "<% Item(title) %>", "link": "<% Item(link) %>"} <% json_items(Rest, 1) %>

@@ -17,10 +17,9 @@
 %%
 %% @author Nick Gerakines <nick@gerakines.net> [http://blog.socklabs.com/]
 %% @copyright Nick Gerakines, 2008
-%%
+%% 
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog@gmail.com]
 %% @copyright Yariv Sadan, 2008
-
 -module(feeds_controller).
 -export([catch_all/2]).
 
@@ -46,7 +45,7 @@ catch_all(A, ["users", Username, Type]) ->
                 [<<"http://twoorl.com/users/">>, Username],
                 [Username, <<"'s latest twoorls">>],
                 get_funs(A, Messages)}
-            }
+            )
     end;
 
 catch_all(A, ["friends", Username, Type]) ->
@@ -64,7 +63,7 @@ catch_all(A, ["friends", Username, Type]) ->
                 [<<"http://twoorl.com/users/">>, Username],
                 [Username, <<"'s friend's latest twoorls">>],
                 get_funs(A, Messages)}
-            }
+            )
     end;
 
 catch_all(A, _) ->
@@ -72,51 +71,29 @@ catch_all(A, _) ->
 
 get_funs(A, Messages) ->
     [fun(title) ->
-	     [M:usr_username(), $:, 32, M:body_nolinks()];
+	     [binary_to_list(M:usr_username()), $:, 32, binary_to_list(M:body_nolinks())];
 	(description) ->
-	     [M:usr_username(), $:, 32, M:body_nolinks()];
+	     [binary_to_list(M:usr_username()), $:, 32, binary_to_list(M:body_nolinks())];
  	(htmldescription) ->
  	     [M:usr_username(), $:, 32, binary_to_list(M:body())];
 	(pubdate) ->
-	     twoorl_util:format_datetime(element(2,M:created_on()));
+	    twoorl_util:format_datetime(element(2,M:created_on()));
 	(guid) ->
 	     msg:get_href(A, M, absolute);
 	(link) ->
 	     msg:get_href(A, M, absolute)
      end || M <- Messages].
 
-return("json", Val) where ->
+%% XXX: This is totally the wrong way to do this. I added the elib/rfc4627.erl
+%%      module to explore creating rfc valid json from Erlang tuples, lists, etc.
+return("json", Val) ->
     {response, [{body, {data, Val}},
-		{header, {content_type, rfc4627:mime_type()}}]}.
+        {header, {content_type, "application/json"}}]};
 
-return("atom", Val) where ->
+return("atom", Val) ->
    {response, [{body, {data, Val}},
-	{header, {content_type, "application/atom+xml"}}]}.
+	{header, {content_type, "application/atom+xml"}}]};
 
-return("atom", Val) where ->
+return("rss", Val) ->
    {response, [{body, {data, Val}},
 	{header, {content_type, "application/xml"}}]}.
-
-
-json_encode(Usr, Messages) ->
-    JsonData = {obj, [
-        {"user", Usr:Username()},
-        {"statuses"}
-    ]},
-    Obj1 = {obj,
-        [
-            {"user", "ngerakines"},
-            {"id", "1233"},
-            {"status", [
-                {obj, [
-                    {"date","today"},
-                    {"message", "Man I feel sick."}
-                ]},
-                {obj, [
-                    {"date","yesterday"},
-                    {"message", "Hmm, I might be getting sick."}
-                ]}
-            ]}
-        ]
-    }.
-    {data, rfc4627:encode(Obj1)}.
