@@ -1,4 +1,4 @@
-<%@ index([B, UiMsgs]) %>
+<%@ index([{B, _}, UiMsgs]) %>
 <div class="t2"><% B(login_cap) %></div>
 <% UiMsgs %>
 <form action="/login" method="post">
