@@ -13,7 +13,7 @@ Yariv
 
 To run in embedded mode:
 
-$ make clean && make && make init
+$ make clean && make
 $ erl -sname twoorlapp -setcookie twoorl -mnesia dir "'twoorl.mnesia'" -yaws embedded true -pa ebin -boot start_sasl
 1> [application:start(X) || X <- [inets, crypto, mnesia, twoorl]].
 [ok, ok, ok, ok]
