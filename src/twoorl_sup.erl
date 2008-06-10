@@ -28,5 +28,5 @@ start_link(Args) ->
 
 init(Args) ->
     {ok, {{one_for_one, 10, 10}, [
-        {twoorl_yaws, {twoorl_server, start_link, [Args]}, permanent, 2000, worker, [twoorl_server]}
+        {twoorl_yaws, {twoorl_server, start_link, [Args]}, permanent, 20000, worker, [twoorl_server]}
     ]}}.

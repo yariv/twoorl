@@ -16,6 +16,6 @@ To run in embedded mode:
 $ make clean && make && make init
 $ erl -sname twoorlapp -setcookie twoorl -mnesia dir "'twoorl.mnesia'" -yaws embedded true -pa ebin -boot start_sasl
 1> [application:start(X) || X <- [inets, crypto, mnesia, twoorl]].
-2> twoorl:start().
+[ok, ok, ok, ok]
 
 # Nick Gerakines
