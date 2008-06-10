@@ -39,22 +39,12 @@ get_href(A, Msg, absolute) ->
 process_raw_body(Body) ->
     Body1 = twoorl_util:htmlize(Body),
     LenDiff = length(Body1) - length(Body),
-    {Body2, BodyNoLinks} = add_tinyurl_links(Body1, LenDiff),
-    {Body3, RecipientNames} = add_reply_links(lists:flatten(Body2), LenDiff),
+    MaxLen = ?MAX_TWOORL_LEN + LenDiff,
+    {Body2, BodyNoLinks} = add_tinyurl_links(Body1, MaxLen),
+    {Body3, RecipientNames} = add_reply_links(lists:flatten(Body2)),
     {lists:flatten(Body3), lists:flatten(BodyNoLinks), RecipientNames}.
 
-add_reply_links(Body, LenDiff) ->
-    %% regexp:parse("@[A-Za-z0-9_]+")
-    Re = {concat,64,
-            {pclosure,{char_class,[95,{48,57},{97,122},{65,90}]}}},
-    {Body1, Changes} = 
-	replace_matches(
-	  Body, Re, fun([_ | Name] = Val) ->
-			    {usr:get_link(Name, Val, list), Val}
-		    end, LenDiff),
-    {Body1, [Match || {[_|Match], _Replacement} <- Changes]}.
-	      
-add_tinyurl_links(Body, LenDiff) ->
+add_tinyurl_links(Body, MaxLen) ->
     %% regexp:parse("http://[^\s]+")
     Re = {concat,
 	  {concat,
@@ -70,17 +60,31 @@ add_tinyurl_links(Body, LenDiff) ->
     %% Remember the tinyurl replacements from the first pass in the
     %% second pass.
     {Body1, Changes1} =
-	replace_matches(Body, Matches, fun twoorl_util:get_tinyurl/1, LenDiff),
+	replace_matches(Body, Matches, fun twoorl_util:get_tinyurl/1, MaxLen),
     {Body2, _Changes2} =
 	replace_matches(
 	  Body, Matches, fun(Url) ->
 				 proplists:get_value(Url, Changes1)
-			 end, LenDiff),
+			 end, MaxLen),
     {Body1, Body2}.
 
 
-replace_matches(Body, Matches, Fun, LenDiff) ->
-    twoorl_util:replace_matches(Body, Matches, Fun, ?MAX_TWOORL_LEN + LenDiff).
+add_reply_links(Body) ->
+    %% regexp:parse("@[A-Za-z0-9_]+")
+    Re = {concat,64,
+            {pclosure,{char_class,[95,{48,57},{97,122},{65,90}]}}},
+    {Body1, Changes} = 
+	replace_matches(
+	  Body, Re, fun([_ | Name] = Val) ->
+			    {usr:get_link(Name, Val, list), Val}
+		    end),
+    {Body1, [Match || {[_|Match], _Replacement} <- Changes]}.
+	      
+
+replace_matches(Body, Matches, Fun) ->
+    replace_matches(Body, Matches, Fun, 999999999).
+replace_matches(Body, Matches, Fun, MaxLen) ->
+    twoorl_util:replace_matches(Body, Matches, Fun, MaxLen).
 
 get_gravatar_id(Msg) ->
     case Msg:usr_gravatar_enabled() of
