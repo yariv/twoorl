@@ -37,14 +37,15 @@ index(A) ->
 			Errs ++ [password_mismatch]
 		end,
 	    if Errs1 =/= [] ->
-		    {data, {Username, Email, Errs1}};
+		    [?Data(A, {Username, Email}),
+		     {ewc, ui_msgs, [A, Errs1]}];
 	       true ->
 		    %% todo set cookie
 		    Usr = register_usr(Username, Email, Password),
 		    login_controller:do_login(Usr)
 	    end;
 	_ ->
-	    {data, {[],[],[]}}
+	    [?Data(A, {[], []}), {data, []}]
     end.
 
 validate(Name, Val) ->
@@ -56,7 +57,8 @@ validate(Name, Val) ->
 		true ->
 		    ok;
 		_ ->
-		    {error, password_too_short}
+		    {error, {too_short, Name,
+			     integer_to_list(?MIN_PASSWORD_LENGTH)}}
 	    end;
 	"email" ->
 	    if Val == [] ->

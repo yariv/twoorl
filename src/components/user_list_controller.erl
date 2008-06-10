@@ -60,13 +60,26 @@ show_related(A, Username, IsFollowing) ->
 		{page_size, ?FOLLOWING_PAGE_SIZE}]]}}
     end.
 
-show(A, Usr, IsFollowing, Users) ->
-    [{data, {Usr:get_link(), usr:get_icon(Usr, true), IsFollowing}},
-     case Users of
-	 [] -> [];
-	 _ ->
-	     UserIconEwcs = 
-		 [{ewc, user_icon, [A, Usr1]} || Usr1 <- Users], 
-	     {ewc, grid, [A, UserIconEwcs, 5]}
-     end].
+show(A, Usr, IsFollowing, Friends) ->
+    Userlink = Usr:get_link(),
+    B = twoorl_util:get_bundle(A),
+    Title = if IsFollowing ->
+		    B({friends_of, Userlink});
+	       true ->
+		    B({followers_of, Userlink})
+	    end,
+    FriendIcons =
+	if Friends == [] ->
+		Username = Usr:username(),
+		if IsFollowing ->
+			{data, B({no_friends, Username})};
+		   true ->
+			{data, B({no_followers, Username})}
+		end;
+	   true ->
+		FriendIconEwcs = 
+		    [{ewc, user_icon, [A, Friend]} || Friend <- Friends], 
+		{ewc, grid, [A, FriendIconEwcs, 5]}
+	end,
+    [{data, {Usr:get_icon(), Title}}, FriendIcons].
     

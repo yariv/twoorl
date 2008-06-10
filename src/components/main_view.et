@@ -1,5 +1,5 @@
-<%@ index([FeedLink, Data]) %>
-<div class="t2">Public timeline</div>
+<%@ index([{B, FeedLink}, Data]) %>
+<div class="t2"><% B(public_timeline) %></div>
 <% Data %>
 <br/>
 <% FeedLink %>

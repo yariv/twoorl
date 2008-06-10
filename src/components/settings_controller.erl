@@ -36,49 +36,49 @@ process_request(A, Usr) ->
 			      Usr, TwitterUsername, TwitterPassword,
 			      TwitterEnabled, GravatarEnabled, Background),
 			twoorl_util:update_session(A,Usr2),
-			[{updated, {<<"Your settings">>, plural}}];
+			[settings_updated];
 		    _ ->
 			[]
 		end,
-	    {data, {TwitterUsername, TwitterPassword,
-		    checked(TwitterEnabled), checked(GravatarEnabled),
-		    str(Background), Errs3,
-		    Messages}};
+	    [?Data(
+		A,
+		{TwitterUsername, TwitterPassword,
+		 checked(TwitterEnabled), checked(GravatarEnabled),
+		 str(Background)}),
+	     {ewc, ui_msgs, [A, Errs3, Messages]}];
 	_ ->
-	    {data, {str(usr:twitter_username(Usr)),
+	    [?Data(
+		A, {str(usr:twitter_username(Usr)),
 		    str(usr:twitter_password(Usr)),
 		    checked(usr:twitter_enabled(Usr)),
 		    checked(usr:gravatar_enabled(Usr)),
-		    str(usr:background(Usr)),
-		    [],
-		    []}}
+		    str(usr:background(Usr))}),
+	     {data, []}]
     end.
 
-get_validation_fun(TwitterEnabled) ->
-    if TwitterEnabled ->
-	    fun(Field, Val) ->
-		    case Val of
-			[] ->
-			    FName = case Field of
-					"twitter_username" ->
-					    "Twitter username";
+get_validation_fun(true) ->
+    fun(Field, Val) ->
+	    case Val of
+		[] ->
+		    FName = case Field of
+				"twitter_username" ->
+				    "Twitter username";
 					"twitter_password" ->
-					    "Twitter password"
-				    end,
-			    {error, {missing_field, FName}};
-			_ ->
-			    ok
-		    end
-	    end;
-       true ->
-	    fun(_Field, _Val) ->
+				    "Twitter password"
+			    end,
+		    {error, {missing_field, FName}};
+		_ ->
 		    ok
 	    end
+    end;
+get_validation_fun(_) ->
+    fun(_Field, _Val) ->
+	    ok
     end.
 
 verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->
-    if TwitterEnabled andalso not TwitterUsername == []
-       andalso not TwitterPassword == [] ->
+    if (TwitterEnabled andalso not (TwitterUsername == [])
+	andalso not (TwitterPassword == [])) ->
 	    case twitter:verify_credentials(
 		   TwitterUsername, TwitterPassword) of
 		ok ->

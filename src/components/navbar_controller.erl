@@ -29,17 +29,18 @@ index(A) ->
     Appmod = tl(yaws_arg:appmoddata(A)),
     Usr = twoorl_util:get_usr(A),
     Username = Usr:username(),
+    B = twoorl_util:get_bundle(A),
     Tabs = 
-	[{"home", <<"home">>},
-	 {"replies", <<"replies">>},
-	 {"users/" ++ binary_to_list(Username), <<"me">>},
-	 {"main", <<"everyone">>}],
+	[{"home", <<"home">>, B(home)},
+	 {"replies", <<"replies">>, B(replies)},
+	 {"users/" ++ binary_to_list(Username), Username, B(me)},
+	 {"main", <<"main">>, B(everyone)}],
     Links = 
 	lists:map(
-	  fun({Tab, Title}) when Tab == Appmod ->
-		  Title;
-	     ({Tab, Title}) ->
-		  erlyweb_html:a(["", Tab], Title)
+	  fun({Tab, _Href, Title}) when Tab == Appmod ->
+		     Title;
+	     ({_Tab, Href, Title}) ->
+		  erlyweb_html:a(["", Href], Title)
 	  end, Tabs),
     {data, Links}.
 	      

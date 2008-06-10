@@ -1,27 +1,27 @@
 <%@ catch_all({no_such_user, Username, RssLink})%>
 The user '<% Username %>' doesn't exist.
 
-<%@ catch_all([{Username, ToFollow, Gravatar, FeedLink}, Data]) %>
+<%@ catch_all([{B, {Username, ToFollow, Gravatar, FeedLink}}, Data]) %>
 <div class="header1">
   <table>
     <tr>
       <td><% Gravatar %></td>
-      <td><div class="t3"><% Username %>'s timeline</div></td>
+      <td><div class="t3"><% B({timeline_of, Username}) %></div></td>
       <td class="following_links">
-	<a href="/following/<% Username %>">following</a> |
-	<a href="/followers/<% Username %>">followers</a>
+	<a href="/following/<% Username %>"><% B(following) %></a> |
+	<a href="/followers/<% Username %>"><% B(followers) %></a>
       </td>
     </tr>
   </table>
-  <% if ToFollow =/= undefined -> to_follow(ToFollow, Username);
+  <% if ToFollow =/= undefined -> to_follow(B, ToFollow, Username);
     true -> [] end %>
 </div>
 <% Data %>
 <br/>
 <% FeedLink %>
 
-<%@ to_follow(Val, Username) %>
+<%@ to_follow(B, Val, Username) %>
 <div class="follow_button">
-  <button <% if not Val -> <<"style=\"display: none\"">>; true -> [] end %> id="follow" onclick="follow('<% Username %>','1')">follow</button>
-  <button <% if Val -> <<"style=\"display: none\"">>; true -> [] end %> id="unfollow" onclick="follow('<% Username %>','0')">unfollow</button>
+  <button <% if not Val -> <<"style=\"display: none\"">>; true -> [] end %> id="follow" onclick="follow('<% Username %>','1')"><% B(follow) %></button>
+  <button <% if Val -> <<"style=\"display: none\"">>; true -> [] end %> id="unfollow" onclick="follow('<% Username %>','0')"><% B(unfollow) %></button>
 </div>

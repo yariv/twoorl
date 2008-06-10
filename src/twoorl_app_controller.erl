@@ -27,6 +27,7 @@ hook(A) ->
     case erlyweb:get_initial_ewc({ewc, A1}) of
 	{page, "/"} -> start(A1);
 	{page, "/static" ++ _} = Ewc -> Ewc;
+	{page, "/favicon.ico"} = Ewc -> {page, "/static/favicon.ico"};
 	{page, [$/ | Username]} ->
 	    A2 = yaws_arg:appmoddata(A1, "/users/" ++ Username),
 	    start(A2);

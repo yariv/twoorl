@@ -347,3 +347,9 @@ mon(N) ->
 
 get_feed_link(Url, Format) ->
     erlyweb_html:a([Url], Format, [{"class", "feed_link"}]).
+
+with_bundle(A, Data) ->
+    {data, {get_bundle(A), Data}}.
+
+get_bundle(A) ->
+    fun twoorl_eng:bundle/1.

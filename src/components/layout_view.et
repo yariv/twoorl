@@ -1,15 +1,15 @@
-<%@ index([Username, Navbar, Ewc]) %>
-<table id="top">
+<%@ index([{B, Username}, Navbar, Ewc]) %>
+<table id="top" class="section1">
   <tr>
     <td id="logo"><a href="/">Twoorl</a></td>
-    <td id="header"><% header(Username) %></td>
+    <td id="header" class="section1"><% header(B, Username) %></td>
   </tr>
 </table>
 <% Navbar %>
 <% Ewc %>
-<div id="footer">Get the <a href="http://code.google.com/p/twoorl">source code</a></div>
+<div id="footer"><% B(get_source) %></div>
 
-<%@ header(undefined) %><a href="/login">login</a> | <a href="/register">register</a>
-<%@ header(Username) %>logged in as <% Username %> |
-<a href="/settings">settings</a> |
-<a href="/logout">logout</a>
+<%@ header(B, undefined) %><a href="/login"><% B(login) %></a> | <a href="/register"><% B(register) %></a>
+<%@ header(B, Username) %><% B(logged_in_as) %> <% Username %> |
+<a href="/settings"><% B(settings) %></a> |
+<a href="/logout"><% B(logout) %></a>

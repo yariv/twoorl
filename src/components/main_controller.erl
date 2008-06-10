@@ -20,13 +20,15 @@
 
 -module(main_controller).
 -compile(export_all).
+-include("twoorl.hrl").
 
 index(A) ->
     FeedUrl = <<"/feeds/main/rss">>,
-    {response,[{body, [{data, twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)},
-		       {ewc, timeline, show, [A]}]},
-	       {phased_vars,
-		[{header_items,
-		  [{feed_link, <<"rss+xml">>,
-		    <<"Twoorl / Everyone (RSS)">>,
-		    FeedUrl}]}]}]}.
+    {response,
+     [{body, [?Data(A, twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)),
+	       {ewc, timeline, show, [A]}]},
+       {phased_vars,
+	[{header_items,
+	  [{feed_link, <<"rss+xml">>,
+	    <<"Twoorl / Everyone (RSS)">>,
+	    FeedUrl}]}]}]}.

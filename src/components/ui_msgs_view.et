@@ -1,0 +1,7 @@
+<%@ index(Msgs) %>
+<div id="ui_msgs" class="section1">
+<% [ui_msg(M) || M <- Msgs] %>
+</div>
+
+<%@ ui_msg({error, Msg}) %><div class="err_msg">* <% Msg %></div>
+<%@ ui_msg(Msg) %><div class="confirm_msg">* <% Msg %></div>

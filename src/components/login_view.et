@@ -1,11 +1,12 @@
-<%@ index(Errs) %>
-<div class="t2">Login</div>
-<% twoorl_messages:show_errs(Errs) %>
+<%@ index([B, UiMsgs]) %>
+<div class="t2"><% B(login_cap) %></div>
+<% UiMsgs %>
 <form action="/login" method="post">
-  <div>username:</div>
+  <div><% B(username) %>:</div>
   <div><input name="username" id="input1"/></div>
-  <div>password:</div>
+  <div><% B(password) %>:</div>
   <div><input name="password" type="password"/></div>
-  <div><input type="submit" value="login"/></div>
+  <div><input type="submit" value="<% B(login_submit) %>"/></div>
 </form>
-Not a member? <a href="/register">register</a>
+<% B(not_member) %> <a href="/register"><% B(register_cap) %></a>
+

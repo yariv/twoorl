@@ -1,17 +1,10 @@
-<%@ show([{Userlink, Icon, IsFollowing}, UserIcons]) %> 
+<%@ show([{Icon, Title}, FriendIcons]) %> 
 <div class="header1">
   <table>
     <tr>
       <td><% Icon %></td>
-      <td class="t3"><% title(IsFollowing, Userlink) %></td>
+      <td class="t3"><% Title %> </td>
     </tr>
   </table>
 </div>
-<% icons(Userlink, IsFollowing, UserIcons) %>
-
-<%@ title(true, Userlink) %>People <% Userlink %> follows
-<%@ title(false, Userlink) %><% Userlink %>'s followers
-
-<%@ icons(Userlink, true, []) %><% Userlink %> isn't following anyone
-<%@ icons(Userlink, false, []) %><% Userlink %> has no followers
-<%@ icons(Userlink, _, Icons) %><% Icons %>
+<% FriendIcons %>

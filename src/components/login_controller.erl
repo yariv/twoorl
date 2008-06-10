@@ -56,10 +56,11 @@ index(A) ->
 	    if Errs1 == [] ->
 		    do_login(Usr);
 	       true ->
-		    {data, Errs1}
+		    [?Data(A, undefined),
+		     {ewc, ui_msgs, [A, Errs1]}]
 	    end;
 	_ ->
-	    {data, []}
+	    [?Data(A, undefined), {data, []}]
     end.
 
 get_usr(Username) ->

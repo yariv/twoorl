@@ -27,3 +27,9 @@
 -define(Error(Msg, Params),
  	twoorl_util:log(?MODULE, ?LINE, error, fun() -> {Msg, Params} end)).
 
+-define(Data(A, Data),
+  if Data == undefined ->
+	  {data, twoorl_util:get_bundle(A)};
+     true ->
+	  {data, {twoorl_util:get_bundle(A), Data}}
+  end.

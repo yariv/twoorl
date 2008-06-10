@@ -8,6 +8,10 @@ form input {
   margin-bottom: 5px;
 }
 
+.section1, .paging_content {
+  margin-bottom: 10px;
+}
+
 #content {
   width:550px;
   margin:0px auto;
@@ -20,7 +24,6 @@ form input {
   width: 100%;
   background-color: #eee;
   padding: 5px;
-  margin-bottom: 10px;
 }
 
 #logo a{
@@ -29,7 +32,6 @@ form input {
 
 #header {
   text-align: right;
-  margin-bottom: 10px;
   font-size: 0.8em;
   vertical-align: middle;
 }
@@ -65,20 +67,12 @@ form input {
   font-size: 1.3em;
 }
 
-.err {
+.err_msg {
   color: #f00;
 }
 
-.message {
-  color: #0f0;
-}
-
-.messages {
-  margin-bottom: 10px;
-}
-
-#timeline {
-  margin-bottom: 10px;
+.confirm_msg {
+  color: #0d0;
 }
 
 .msg {
@@ -131,7 +125,6 @@ a:visited {
 #footer {
   margin: 20px auto 0px auto;
   font-size: 0.7em;
-  
 }
 
 .twoorl {
@@ -157,8 +150,4 @@ fieldset {
 .user_icon {
   text-align: center;
   padding: 3px;
-}
-
-.paging_content {
-  margin-bottom: 10px
 }

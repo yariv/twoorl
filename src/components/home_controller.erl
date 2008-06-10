@@ -27,6 +27,6 @@ index(A) ->
       A,
       fun(Usr) ->
 	      Ids = usr:get_timeline_usr_ids(Usr),
-	      [{data, {Usr:username(), Usr:twitter_enabled() == 1}},
+	      [?Data(A, {Usr:username(), Usr:twitter_enabled() == 1}),
 	       {ewc, timeline, show, [A, Ids]}]
       end).

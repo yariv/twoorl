@@ -20,20 +20,17 @@
 
 -module(layout_controller).
 -compile(export_all).
+-include("twoorl.hrl").
 
 private() ->
     true.
 
 index(A, Ewc) ->
     Usr = twoorl_util:get_usr(A),
-    [{data, if Usr =/= undefined ->
-		    Usr:username();
-	      true ->
-		   undefined
-	    end},
-     if Usr =/= undefined ->
-	     {ewc, navbar, [A]};
-	true ->
-	     {data, []}
-     end,
-     Ewc].
+    {Username, Navbar} =
+	if Usr =/= undefined ->
+		  {Usr:username(), {ewc, navbar, [A]}};
+	     true ->
+		{undefined, {data, []}}
+	end,
+    [?Data(A, Username), Navbar, Ewc].

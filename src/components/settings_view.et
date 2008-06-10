@@ -1,33 +1,27 @@
-<%@ index({TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Background, Errs, Msgs}) %>
-<div class="t2">Settings</div>
-<% twoorl_messages:show_errs(Errs) %>
-<% twoorl_messages:show(Msgs) %>
+<%@ index([{B, {TwitterUsername, TwitterPassword, TwitterEnabledChecked,
+    GravatarEnabledChecked, Background}}, UiMsgs]) %>
+<div class="t2"><% B(settings_cap) %></div>
+<% UiMsgs %>
 <form action="/settings" method="post">
   <div class="section">
     <div class="t3">Gravatar</div>
-    <div>Use <a href="http://gravatar.com">gravatar</a>?
-      <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
+    <div><% B(use_gravatar) %> <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
   </div>
   <div class="section">
-    <div class="t3">Profile background</div>
-    <div>Enter the url for your profile background image (leave blank to use the default background):</div>
+    <div class="t3"><% B(profile_bg) %></div>
+    <div><% B(profile_bg_help) %></div>
     <div><input size="40" name="background" value="<% Background %>"/></div>
   </div>
   <div class="section">
     <div class="t3">Twitter</div>
-    <div>You may provide your Twitter account details to have your twoorls automatically posted to Twitter.<br/><br/>
-      Only twoorls that don't contain replies (e.g. "@sergey") will be posted to Twitter.<br/>
-      <br/>
-      <div>Twitter username: </div>
+    <div><% B(twitter_help) %><br/><br/>
+      <div><% B(twitter_username) %></div>
       <div><input name="twitter_username" value="<% TwitterUsername %>"/></div>
-      <div>Twitter password: </div>
+      <div><% B(twitter_password) %></div>
       <div><input name="twitter_password" type="password" value="<% TwitterPassword %>"/></div>
-      <div>Automatically post my Twoorls to Twitter? <input type="checkbox" name="twitter_enabled" <% TwitterEnabledChecked %>/></div>
+      <div><% B(twitter_auto) %> <input type="checkbox" name="twitter_enabled" <% TwitterEnabledChecked %>/></div>
     </div>
-  </div>
-  <div class="section">
-    <div><input type="submit" value="submit"/></div>
+    <div><br/><input type="submit" value="submit"/></div>
   </div>
 
 </form>
