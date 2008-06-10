@@ -54,6 +54,7 @@ index(A) ->
 			Errs
 		end,
 	    if Errs1 == [] ->
+            spawn(twoorl_stats, call, [{record, site_login}]),
 		    do_login(Usr);
 	       true ->
 		    {data, Errs1}

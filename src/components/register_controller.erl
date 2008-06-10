@@ -41,6 +41,7 @@ index(A) ->
 	       true ->
 		    %% todo set cookie
 		    Usr = register_usr(Username, Email, Password),
+		    spawn(twoorl_stats, call, [{record, registration}]),
 		    login_controller:do_login(Usr)
 	    end;
 	_ ->

@@ -44,7 +44,7 @@ compile_update() ->
     compile([{last_compile_time, auto}]).
 
 compile(Opts) ->
-    erlyweb:compile(compile_dir(default),
+    erlyweb:compile(compile_dir(auto),
 		    [{erlydb_driver, mysql}, {erlydb_timeout, 20000} | Opts]).
 
 compile_dir(Dir) ->

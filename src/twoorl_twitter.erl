@@ -33,5 +33,6 @@ send_tweet(Usr, Msg) ->
             ?Warn("error sending tweet ~p ~p", [Msg:id(), Res]),
             msg:update([{twitter_status, ?TWITTER_SENT_ERR}], {id, '=', Msg:id()});
 	    _ ->
+            spawn(twoorl_stats, call, [{record, twitter_crosspost}]),
             msg:update([{twitter_status, ?TWITTER_SENT_OK}], {id, '=', Msg:id()})
     end.

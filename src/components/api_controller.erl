@@ -63,6 +63,7 @@ send(A) ->
 					   Usr:gravatar_enabled()},
 					  {twitter_status, TwitterStatus}]),
 		      Msg1 = Msg:save(),
+		      spawn(twoorl_stats, call, [{record, twoot}]),
 
 		      if TwitterEnabled andalso RecipientNames == [] ->
 			      spawn(twoorl_twitter, send_tweet, [Usr, Msg1]); %% yey concurrency
