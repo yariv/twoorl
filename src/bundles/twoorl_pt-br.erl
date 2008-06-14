@@ -4,14 +4,14 @@
 bundle(Tag) ->
     case Tag of
 	%% layout
-	login -> <<"login">>;
-	register -> <<"register">>;
-	logged_in_as -> <<"logged in as">>;
+	login -> <<"conectar-se">>;
+	register -> <<"registrar-se">>;
+	logged_in_as -> <<"conectado como">>;
 	settings -> <<"configurações">>;
-	logout -> <<"logout">>;
+	logout -> <<"sair">>;
 	get_source ->
-	    <<"Get the <a href=\"http://code.google.com/p/twoorl\">"
-	     "source code</a>">>;
+	    <<"Obtenha o <a href=\"http://code.google.com/p/twoorl\">"
+	     "código fonte</a>">>;
 
 	%% navbar
 	home -> <<"home">>;
@@ -31,17 +31,17 @@ bundle(Tag) ->
 	username -> <<"nome de usuário">>;
 	email -> <<"email">>;
 	password -> <<"senha">>;
-	password2 -> <<"re-enter password">>;
+	password2 -> <<"repita a senha">>;
 	already_member -> <<"Já possui sua conta?">>;
 	login_cap -> <<"Login">>;
 
 	%% home page
-	upto -> <<"What are you up to?">>;
-	twitter_msg -> <<"Automatic posting to Twitter enabled for "
-			"non-replies">>;
+	upto -> <<"O que você está fazendo agora?">>;
+	twitter_msg -> <<"Postagem automática no Twitter habilitada para "
+			"mensagens que não sejam respostas">>;
 
 	%% main page
-	public_timeline -> <<"Public timeline">>;
+	public_timeline -> <<"Linha do tempo pública">>;
 
 	%% users page
 	{no_user, Username} ->
@@ -55,58 +55,58 @@ bundle(Tag) ->
 
 	%% friends page
 	{friends_of, Userlink} ->
-	    [<<"People ">>, Userlink, <<" follows">>];
+	    [<<"Pessoas que ">>, Userlink, <<" segue">>];
 	{followers_of, Userlink} ->
-	    [Userlink, <<"'s followers">>];
+	    [<<"Seguidore de ">>, Userlink];
 	{no_friends, Username} ->
-	    [Username, <<" isn't following anyone">>];
+	    [Username, <<" ainda não está seguindo ninguem">>];
 	{no_followers, Username} ->
-	    [Username, <<" has no followers">>];
+	    [Username, <<" não tem seguidores">>];
 
 
 	%% settings page
-	settings_cap -> <<"Settings">>;
+	settings_cap -> <<"Configurações">>;
 	use_gravatar -> <<"Use <a href=\"http://gravatar.com\" "
 			 "target=\"_blank\">Gravatar</a>?">>;
-	profile_bg -> <<"Profile background">>;
+	profile_bg -> <<"Imagem de fundo do seu perfil">>;
 	profile_bg_help ->
-	    <<"Enter the url for your profile background image "
-	     "(leave blank to use the default background):">>;
+	    <<"Informe a url para a imagem de fundo do seu perfil "
+	     "(você pode deixar este campo em branco para usar o fundo default):">>;
 	twitter_help ->
-	    <<"You may provide your Twitter account details to have "
-	     "your twoorls automatically posted to Twitter.<br/><br/>"
-	     "Only twoorls that don't contain replies (e.g."
-	     "\"@sergey\") will be posted to Twitter.">>;
-	twitter_username -> <<"Twitter username:">>;
-	twitter_password -> <<"Twitter password:">>;
-	twitter_auto -> <<"Automatically post my Twoorls to Twitter?">>;
-	submit -> <<"submit">>;
+	    <<"Você também pode informar os detalhes de sua conta no twitter "
+	     "para que seus twoorls sejam automaticamente postados no Twitter.<br/><br/>"
+	     "Apenas os twoorls que não tenham respostas (e.g."
+	     "\"@sergey\") serão postados no Twitter.">>;
+	twitter_username -> <<"Nome de usuário no Twitter:">>;
+	twitter_password -> <<"Senha do twitter:">>;
+	twitter_auto -> <<"Postar meus Twoorls automaticamente no Twitter?">>;
+	submit -> <<"submeter alterações">>;
 	
 	%% error messages
 	{missing_field, Field} ->
-	    [<<"The ">>, Field, <<" field is required">>];
+	    [<<"O ">>, Field, <<" campo é obrigatório">>];
 	{username, Val} ->
-	    [<<"The username '">>, Val, <<"' is taken">>];
+	    [<<"O nome de usuário '">>, Val, <<"' já está sendo utilizado">>];
 	{invalid_username, Val} ->
-	    [<<"The username '">>, Val,
-	     <<"' is invalid. Only letters, numbers and underscore ('_') "
-	      "are accepted">>];
+	    [<<"O nome de usuário '">>, Val,
+	     <<"' é inválido. Apenas letras, números e underscores ('_') "
+	      "são permitidos">>];
 	invalid_login ->
-	    <<"Invalid username or password">>;
+	    <<"Nome de usuário ou senha inválidos">>;
 	{too_short, Field, Min} ->
-	    [<<"The ">>, Field, <<" is too short (">>, Min,
-	     <<" chars minimum)">>];
+	    [<<"O campo ">>, Field, <<" é muito curto (">>, Min,
+	     <<" caracteres é o mínimo)">>];
 	password_mismatch ->
-	    <<"The password values didn't match">>;
+	    <<"Os campos de senhas não são iguais.">>;
 	twitter_unauthorized ->
-	    <<"Twitter rejected the username/password combination you "
-	     "provided">>;
+	    <<"O Twitter rejeitou a combinação de usuário e senha que você  "
+	     "informou">>;
 	twitter_authorization_error ->
-	    <<"Couldn't connect to Twitter. Please try again later.">>;
+	    <<"Não foi possível conectar-se ao Twitter. Por favor tente novamente mais tarde.">>;
 	{invalid_url, Field} ->
-	    [<<"The ">>, Field, <<" URL must start with 'http://'">>];
+	    [<<"O campo ">>, Field, <<"  precisa começar com 'http://'">>];
 	
 	%% confirmation messages
 	settings_updated ->
-	    [<<"Your settings have been updated successfully">>]
+	    [<<"Suas configurações foram atualizadas com sucesso">>]
     end.
