@@ -1,4 +1,4 @@
--module(twoorl_eng).
+-module(twoorl_kor).
 -export([bundle/1]).
 
 bundle(Tag) ->

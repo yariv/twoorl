@@ -1,8 +1,16 @@
 <%@ index([{B, {TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Background}}, UiMsgs]) %>
+    GravatarEnabledChecked, Background, SelectedLanguage, Languages}},
+    UiMsgs]) %>
 <div class="t2"><% B(settings_cap) %></div>
 <% UiMsgs %>
 <form action="/settings" method="post">
+  <div class="section">
+    <div class="t3">Language</div>
+    <div><select name="lang">
+	<% [option(Language, SelectedLanguage) || Language <- Languages] %>
+      </select>
+    </div>
+  </div>
   <div class="section">
     <div class="t3">Gravatar</div>
     <div><% B(use_gravatar) %> <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
@@ -23,6 +31,7 @@
     </div>
     <div><br/><input type="submit" value="submit"/></div>
   </div>
-
 </form>
+
+<%@ option({Val, Opt}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected">>; true -> [] end %>><% Opt %></option>
 

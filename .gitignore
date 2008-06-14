@@ -5,3 +5,4 @@ Mnesia.nonode@nohost/
 *.log
 #*#
 .#*
+.DS_Store

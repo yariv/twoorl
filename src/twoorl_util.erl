@@ -131,7 +131,7 @@ htmlize_l([X|Tail], Ack) when is_list(X) ->
 log(Module, Line, Level, FormatFun) ->
     Func = case Level of
 	       debug ->
-		   undefined;
+		   info_msg;
 	       info ->
 		   info_msg;
 	       normal ->
@@ -352,4 +352,16 @@ with_bundle(A, Data) ->
     {data, {get_bundle(A), Data}}.
 
 get_bundle(A) ->
-    fun twoorl_eng:bundle/1.
+    Module =
+	case get_usr(A) of
+	    undefined ->
+		twoorl_eng;
+	    Usr ->
+		case Usr:language() of
+		    <<"eng">> -> twoorl_eng;
+		    <<"spa">> -> twoorl_es;
+		    <<"ru">> -> twoorl_rus;
+		    <<"kor">> -> twoorl_kor
+		end
+	end,
+    fun(StrId) -> Module:bundle(StrId) end.			 

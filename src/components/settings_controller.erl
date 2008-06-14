@@ -14,6 +14,8 @@ process_request(A, Usr) ->
 	    GravatarEnabled = is_checked("gravatar_enabled", Params),
 	    ValidationFun = get_validation_fun(TwitterEnabled),
 	    Background = proplists:get_value("background", Params),
+	    Language = proplists:get_value("lang", Params),
+	    
 	    
 	    {[TwitterUsername, TwitterPassword], Errs} =
 		erlyweb_forms:validate(
@@ -34,27 +36,42 @@ process_request(A, Usr) ->
 			Usr2 =
 			    update_settings(
 			      Usr, TwitterUsername, TwitterPassword,
-			      TwitterEnabled, GravatarEnabled, Background),
+			      TwitterEnabled, GravatarEnabled, Background,
+			      Language),
 			twoorl_util:update_session(A,Usr2),
 			[settings_updated];
 		    _ ->
 			[]
 		end,
-	    [?Data(
-		A,
-		{TwitterUsername, TwitterPassword,
-		 checked(TwitterEnabled), checked(GravatarEnabled),
-		 str(Background)}),
+	    [result_data(
+	       A,
+	       TwitterUsername, TwitterPassword,
+	       checked(TwitterEnabled), checked(GravatarEnabled),
+	       str(Background),
+	       str(Language)),
 	     {ewc, ui_msgs, [A, Errs3, Messages]}];
 	_ ->
-	    [?Data(
-		A, {str(usr:twitter_username(Usr)),
-		    str(usr:twitter_password(Usr)),
-		    checked(usr:twitter_enabled(Usr)),
-		    checked(usr:gravatar_enabled(Usr)),
-		    str(usr:background(Usr))}),
+	    [result_data(A, str(usr:twitter_username(Usr)),
+			 str(usr:twitter_password(Usr)),
+			 checked(usr:twitter_enabled(Usr)),
+			 checked(usr:gravatar_enabled(Usr)),
+			 str(usr:background(Usr)),
+			 str(usr:language(Usr))),
 	     {data, []}]
     end.
+
+result_data(A, TwitterUsername, TwitterPassword, TwitterEnabled,
+	    GravatarEnabled, Background, SelectedLanguage) ->
+    ?Data(A, {TwitterUsername, TwitterPassword, TwitterEnabled,
+	      GravatarEnabled, Background, SelectedLanguage,
+	      get_languages()}).
+
+%% taken from http://www.loc.gov/standards/iso639-2/php/code_list.php
+get_languages() ->
+    [{<<"eng">>, <<"English">>},
+     {<<"spa">>, <<"Spanish">>},
+     {<<"ru">>, <<"Russian">>},
+     {<<"kor">>, <<"Korean">>}].
 
 get_validation_fun(true) ->
     fun(Field, Val) ->
@@ -96,14 +113,15 @@ verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->
     end.
 
 update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
-	  GravatarEnabled, Background) ->
+	  GravatarEnabled, Background, Language) ->
     Usr1 = usr:set_fields(
 	    Usr,
 	    [{twitter_username, TwitterUsername},
 	     {twitter_password, TwitterPassword},
 	     {twitter_enabled, bool_to_int(TwitterEnabled)},
 	     {gravatar_enabled, bool_to_int(GravatarEnabled)},
-	     {background, Background}]),
+	     {background, Background},
+	     {language, iolist_to_binary(Language)}]),
     Usr2 = Usr1:save(),
     LastGravatarStatus = Usr:gravatar_enabled(),
     if GravatarEnabled == LastGravatarStatus ->
