@@ -57,7 +57,7 @@ bundle(Tag) ->
 
 	%% users page
 	{no_user, Username} ->
-	    [<<"El usuario '">>, Username, <<" no existe">>];
+	    [<<"El usuario '">>, Username, <<"' no existe">>];
 	{timeline_of, Username} ->
 	    [<<"Cronograma de">>, Username];
 	following -> <<"siguiendo">>;

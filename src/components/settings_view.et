@@ -1,15 +1,12 @@
 <%@ index([{B, {TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Background, SelectedLanguage, Languages}},
+    GravatarEnabledChecked, Background, SelectedLanguage}},
     UiMsgs]) %>
 <div class="t2"><% B(settings_cap) %></div>
 <% UiMsgs %>
 <form action="/settings" method="post">
   <div class="section">
     <div class="t3">Language</div>
-    <div><select name="lang">
-	<% [option(Language, SelectedLanguage) || Language <- Languages] %>
-      </select>
-    </div>
+    <div><% language_box(SelectedLanguage) %></div>
   </div>
   <div class="section">
     <div class="t3">Gravatar</div>
@@ -33,5 +30,9 @@
   </div>
 </form>
 
+<%@ language_box(SelectedLanguage) %><select name="lang">
+	<% [option(Bundle, SelectedLanguage) ||
+	   Bundle <- twoorl_util:bundles()] %>
+      </select>
 <%@ option({Val, Opt, _Bundle}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected">>; true -> [] end %>><% Opt %></option>
 

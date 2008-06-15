@@ -68,10 +68,7 @@ process_request(A, Usr) ->
 result_data(A, TwitterUsername, TwitterPassword, TwitterEnabled,
 	    GravatarEnabled, Background, SelectedLanguage) ->
     ?Data(A, {TwitterUsername, TwitterPassword, TwitterEnabled,
-	      GravatarEnabled, Background, SelectedLanguage,
-	      twoorl_util:bundles()}).
-	      
-
+	      GravatarEnabled, Background, SelectedLanguage}).
 
 
 get_validation_fun(true) ->
