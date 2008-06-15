@@ -384,3 +384,7 @@ get_bundle(A) ->
 		end
 	end,
     fun(StrId) -> Module1:bundle(StrId) end.			 
+
+delete_sessions() ->
+    Sessions = mnesia:dirty_match_object(#session{_ = '_'}),
+    lists:foreach(fun mnesia:dirty_delete_object/1, Sessions).
