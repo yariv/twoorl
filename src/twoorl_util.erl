@@ -363,7 +363,7 @@ with_bundle(A, Data) ->
 bundles() ->
     [{<<"eng">>, <<"English">>, twoorl_eng},
      {<<"kor">>, <<"Korean">>, twoorl_kor},
-     {<<"por">>, <<"Portugese (Brazilian)">>, twoorl_por_br},
+     {<<"por">>, <<"Portuguese (Brazilian)">>, twoorl_por_br},
      {<<"ru">>, <<"Russian">>, twoorl_rus},
      {<<"spa">>, <<"Spanish">>, twoorl_spa}].
 
