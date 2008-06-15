@@ -261,11 +261,18 @@ get_session_key(A) ->
     yaws_arg:get_opaque_val(A, key).
 
 update_session(A, Usr) ->
-    update_session_by_key(twoorl_util:get_session_key(A), Usr).
+    Key = twoorl_util:get_session_key(A),
+    update_session(A, Usr, Key).
 
-update_session_by_key(Key, Usr) ->
-    mnesia:dirty_write(#session{key=Key,
-				value=Usr}).
+update_session(A, Usr, Key) ->
+    NewSession = #session{key=Key,
+			  value=Usr},
+    mnesia:dirty_write(NewSession),
+    Opaque1 = 
+	lists:map(fun({session, _}) -> {session, NewSession};
+		     (Other) -> Other
+		  end, yaws_arg:opaque(A)),
+    yaws_arg:opaque(A, Opaque1).
 
 
 gravatar_icon(GravatarId) ->
@@ -351,17 +358,29 @@ get_feed_link(Url, Format) ->
 with_bundle(A, Data) ->
     {data, {get_bundle(A), Data}}.
 
+%% codes taken from http://www.loc.gov/standards/iso639-2/php/code_list.php
+
+bundles() ->
+    [{<<"eng">>, <<"English">>, twoorl_eng},
+     {<<"kor">>, <<"Korean">>, twoorl_kor},
+     {<<"por">>, <<"Portugese (Brazilian)">>, twoorl_por_br},
+     {<<"ru">>, <<"Russian">>, twoorl_rus},
+     {<<"spa">>, <<"Spanish">>, twoorl_spa}].
+
+
 get_bundle(A) ->
-    Module =
+    Module1 =
 	case get_usr(A) of
 	    undefined ->
 		twoorl_eng;
 	    Usr ->
-		case Usr:language() of
-		    <<"eng">> -> twoorl_eng;
-		    <<"spa">> -> twoorl_es;
-		    <<"ru">> -> twoorl_rus;
-		    <<"kor">> -> twoorl_kor
+		Lang = Usr:language(),
+		case lists:keysearch(Lang, 1, bundles()) of
+		    none ->
+			?Warn("undefined language: ~p ~p", 
+			      [Usr:username(), Lang]),
+			twoorl_eng;
+		    {value, {_, _, Module}} -> Module
 		end
 	end,
-    fun(StrId) -> Module:bundle(StrId) end.			 
+    fun(StrId) -> Module1:bundle(StrId) end.			 

@@ -30,48 +30,49 @@ process_request(A, Usr) ->
 			_ -> [{invalid_url, <<"background image">>} | Errs1]
 		    end,
 	    Errs3 = Errs ++ Errs2,
-	    Messages =
-		case Errs3 of
-		    [] ->
-			Usr2 =
-			    update_settings(
-			      Usr, TwitterUsername, TwitterPassword,
-			      TwitterEnabled, GravatarEnabled, Background,
-			      Language),
-			twoorl_util:update_session(A,Usr2),
-			[settings_updated];
-		    _ ->
-			[]
-		end,
-	    [result_data(
-	       A,
-	       TwitterUsername, TwitterPassword,
-	       checked(TwitterEnabled), checked(GravatarEnabled),
-	       str(Background),
-	       str(Language)),
-	     {ewc, ui_msgs, [A, Errs3, Messages]}];
+	    case Errs3 of
+		[] ->
+		    Usr2 =
+			update_settings(
+			  Usr, TwitterUsername, TwitterPassword,
+			  TwitterEnabled, GravatarEnabled, Background,
+			  Language),
+		    twoorl_util:update_session(A,Usr2),
+		    {ewr, settings, ["?success=true"]};
+		_ ->
+		    [result_data(
+		       A,
+		       TwitterUsername, TwitterPassword,
+		       checked(TwitterEnabled), checked(GravatarEnabled),
+		       str(Background),
+		       str(Language)),
+		     {ewc, ui_msgs, [A, Errs3, []]}]
+	    end;
 	_ ->
+	    UiMessages = case lists:member({"success", "true"},
+					yaws_api:parse_query(A)) of
+			     true ->
+			       [settings_updated];
+			     false ->
+				 []
+			 end,
 	    [result_data(A, str(usr:twitter_username(Usr)),
 			 str(usr:twitter_password(Usr)),
 			 checked(usr:twitter_enabled(Usr)),
 			 checked(usr:gravatar_enabled(Usr)),
 			 str(usr:background(Usr)),
 			 str(usr:language(Usr))),
-	     {data, []}]
+	     {ewc, ui_msgs, [A, [], UiMessages]}]
     end.
 
 result_data(A, TwitterUsername, TwitterPassword, TwitterEnabled,
 	    GravatarEnabled, Background, SelectedLanguage) ->
     ?Data(A, {TwitterUsername, TwitterPassword, TwitterEnabled,
 	      GravatarEnabled, Background, SelectedLanguage,
-	      get_languages()}).
+	      twoorl_util:bundles()}).
+	      
 
-%% taken from http://www.loc.gov/standards/iso639-2/php/code_list.php
-get_languages() ->
-    [{<<"eng">>, <<"English">>},
-     {<<"spa">>, <<"Spanish">>},
-     {<<"ru">>, <<"Russian">>},
-     {<<"kor">>, <<"Korean">>}].
+
 
 get_validation_fun(true) ->
     fun(Field, Val) ->
@@ -121,7 +122,7 @@ update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
 	     {twitter_enabled, bool_to_int(TwitterEnabled)},
 	     {gravatar_enabled, bool_to_int(GravatarEnabled)},
 	     {background, Background},
-	     {language, iolist_to_binary(Language)}]),
+	     {language, list_to_binary(Language)}]),
     Usr2 = Usr1:save(),
     LastGravatarStatus = Usr:gravatar_enabled(),
     if GravatarEnabled == LastGravatarStatus ->
@@ -137,6 +138,7 @@ update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
 
 
 str(undefined) -> [];
+str(Val) when is_list(Val) -> list_to_binary(Val);
 str(Val) -> Val.
 
 checked(0) -> [];

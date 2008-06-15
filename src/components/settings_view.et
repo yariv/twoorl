@@ -33,5 +33,5 @@
   </div>
 </form>
 
-<%@ option({Val, Opt}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected">>; true -> [] end %>><% Opt %></option>
+<%@ option({Val, Opt, _Bundle}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected">>; true -> [] end %>><% Opt %></option>
 

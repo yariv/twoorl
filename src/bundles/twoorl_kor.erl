@@ -1,3 +1,18 @@
+%% This file is part of Twoorl.
+%% 
+%% Twoorl is free software: you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation, either version 3 of the License, or
+%% (at your option) any later version.
+%% 
+%% Twoorl is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%% 
+%% You should have received a copy of the GNU General Public License
+%% along with Twoorl.  If not, see <http://www.gnu.org/licenses/>.
+
 -module(twoorl_kor).
 -export([bundle/1]).
 
@@ -27,12 +42,9 @@ bundle(Tag) ->
     
      %% register page
      register_cap -> <<"회원가입">>;
-     username -> <<"아이디">>;
      email -> <<"이메일">>;
-     password -> <<"비밀번호">>;
      password2 -> <<"비밀번호 다시 입력해보세요">>;
      already_member -> <<"벌써 회원 이세요?">>;
-     login_cap -> <<"로그인">>;
     
      %% home page
      upto -> <<"뭘 하세요?">>;

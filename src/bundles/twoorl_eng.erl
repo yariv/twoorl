@@ -1,3 +1,18 @@
+%% This file is part of Twoorl.
+%% 
+%% Twoorl is free software: you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation, either version 3 of the License, or
+%% (at your option) any later version.
+%% 
+%% Twoorl is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%% 
+%% You should have received a copy of the GNU General Public License
+%% along with Twoorl.  If not, see <http://www.gnu.org/licenses/>.
+
 -module(twoorl_eng).
 -export([bundle/1]).
 
@@ -27,13 +42,12 @@ bundle(Tag) ->
 	login_submit -> <<"login">>;
 
 	%% register page
+	% note: 'username', 'password' and 'Login_cap' are taken from
+	% login page section
 	register_cap -> <<"Register">>;
-	username -> <<"username">>;
 	email -> <<"email">>;
-	password -> <<"password">>;
 	password2 -> <<"re-enter password">>;
 	already_member -> <<"Already a member?">>;
-	login_cap -> <<"Login">>;
 
 	%% home page
 	upto -> <<"What are you up to?">>;

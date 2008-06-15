@@ -54,7 +54,7 @@ index(A) ->
 			Errs
 		end,
 	    if Errs1 == [] ->
-		    do_login(Usr);
+		    do_login(A, Usr);
 	       true ->
 		    [?Data(A, undefined),
 		     {ewc, ui_msgs, [A, Errs1]}]
@@ -71,8 +71,8 @@ get_usr(Username) ->
 	    {ok, Usr}
     end.
 
-do_login(Usr) ->
+do_login(A, Usr) ->
     Key = twoorl_util:gen_key(),
-    twoorl_util:update_session_by_key(Usr, Key),
+    twoorl_util:update_session(A, Usr, Key),
     usr:update([{session_key, Key}], {id,'=',usr:id(Usr)}),
     {response, [yaws_api:setcookie("key", Key), ewr]}.
