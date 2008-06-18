@@ -63,18 +63,25 @@ send(A) ->
 					   Usr:gravatar_enabled()},
 					  {twitter_status, TwitterStatus}]),
 		      Msg1 = Msg:save(),
-		      spawn(twoorl_stats, call, [{record, twoot}]),
+
+%%		      twoorl_stats:cast({record, twoorl}),
 
 		      if TwitterEnabled andalso RecipientNames == [] ->
-			      spawn(twoorl_twitter, send_tweet, [Usr, Msg1]); %% yey concurrency
+			      spawn(twoorl_twitter, send_tweet, [Usr, Msg1]);
 			 true ->
 			      ok
 		      end,
 
-		      %% yey concurrency
-              RecipientIds =  usr:find({username, in, lists:usort([Name || Name <- RecipientNames])}),
-		      spawn(reply, save_replies, [Msg1:id(), RecipientIds]),
-
+		      spawn(
+			fun() ->
+				RecipientIds = 
+				    usr:find(
+				      {username, in,
+				       lists:usort(
+					 [Name || Name <- RecipientNames])}),
+				reply:save_replies(Msg1:id(), RecipientIds)
+			end),
+		      
 		      case proplists:get_value("get_html", Params) of
 			  "true" ->
 			      Msg2 = msg:created_on(

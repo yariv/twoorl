@@ -27,6 +27,7 @@ start_link(Args) ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, Args).
 
 init(Args) ->
-    {ok, {{one_for_one, 10, 10}, [
-        {twoorl_yaws, {twoorl_server, start_link, [Args]}, permanent, 20000, worker, [twoorl_server]}
-    ]}}.
+    {ok, {{one_for_one, 10, 10},
+	  [{twoorl_yaws,
+	    {twoorl_server, start_link, [Args]},
+	    permanent, 20000, worker, [twoorl_server]}]}}.

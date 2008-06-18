@@ -99,7 +99,7 @@ bundle(Tag) ->
 	%% error messages
 	{missing_field, Field} ->
 	    [<<"The ">>, Field, <<" field is required">>];
-	{username, Val} ->
+	{username_taken, Val} ->
 	    [<<"The username '">>, Val, <<"' is taken">>];
 	{invalid_username, Val} ->
 	    [<<"The username '">>, Val,

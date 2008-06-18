@@ -22,11 +22,11 @@ bundle(Tag) ->
 	login -> <<"acceder">>;
 	register -> <<"crear una cuenta">>;
 	logged_in_as -> <<"conectado como">>;
-	settings -> <<"configuraciÛn">>;
+	settings -> <<"configuraci√≥n">>;
 	logout -> <<"salir">>;
 	get_source ->
 	    <<"Obtener el <a href=\"http://code.google.com/p/twoorl\">"
-	     "cÛdigo fuente</a>">>;
+	     "c√≥digo fuente</a>">>;
 
 	%% navbar
 	home -> <<"inicio">>;
@@ -37,23 +37,23 @@ bundle(Tag) ->
 	%% login page
 	login_cap -> <<"Acceder">>;
 	username -> <<"nombre de usuario">>;
-	password -> <<"contraseÒa">>;
+	password -> <<"contrase√±a">>;
 	not_member -> <<"No dispone de una cuenta?">>;
 	login_submit -> <<"acceder">>;
 
 	%% register page
 	register_cap -> <<"Crear una cuenta">>;
-	email -> <<"direcciÛn de correo electrÛnico">>;
-	password2 -> <<"vuelve a introducir la contraseÒa">>;
+	email -> <<"direcci√≥n de correo electr√≥nico">>;
+	password2 -> <<"vuelve a introducir la contrase√±a">>;
 	already_member -> <<"Ya dispone de una cuenta?">>;
 
 	%% home page
-	upto -> <<"QuÈ est·s haciendo?">>;
-	twitter_msg -> <<"EnvÌo autom·tico a Twitter activado para "
+	upto -> <<"Qu√© est√°s haciendo?">>;
+	twitter_msg -> <<"Env√≠o autom√°tico a Twitter activado para "
 			"mensajes sin respuestas">>;
 
 	%% main page
-	public_timeline -> <<"Cronograma p˙blico">>;
+	public_timeline -> <<"Cronograma p√∫blico">>;
 
 	%% users page
 	{no_user, Username} ->
@@ -63,7 +63,7 @@ bundle(Tag) ->
 	following -> <<"siguiendo">>;
 	followers -> <<"seguidores">>;
 	follow -> <<"seguir">>;
-	unfollow -> <<"no seguir m·s">>;
+	unfollow -> <<"no seguir m√°s">>;
 
 	%% friends page
 	{friends_of, Userlink} ->
@@ -77,47 +77,47 @@ bundle(Tag) ->
 
 
 	%% settings page
-	settings_cap -> <<"ConfiguraciÛn">>; %% jdilelle says: can also be "Par·metros".
+	settings_cap -> <<"Configuraci√≥n">>; %% jdilelle says: can also be "Par√°metros".
 	use_gravatar -> <<"Usar un <a href=\"http://gravatar.com\" "
 			 "target=\"_blank\">Gravatar</a>?">>;
 	profile_bg -> <<"Fondo de pantalla de tu perfil">>;
 	profile_bg_help ->
-	    <<"Proporcione el URL de la im·gen de fondo de pantalla "
-	     "(dejar vacÌo para usar el fondo de pantalla por defecto):">>;
+	    <<"Proporcione el URL de la im√°gen de fondo de pantalla "
+	     "(dejar vac√≠o para usar el fondo de pantalla por defecto):">>;
 	twitter_help ->
 	    <<"Puedes proporcionar los detalles de tu cuenta Twitter para que tus "
-	     "twoorls sean enviados autom·ticamente a Twitter.<br/><br/>"
-	     "SÛlo los twoorls sin respuestas (por ejemplo"
-	     "\"@sergey\") ser·n enviados a Twitter.">>;
+	     "twoorls sean enviados autom√°ticamente a Twitter.<br/><br/>"
+	     "S√≥lo los twoorls sin respuestas (por ejemplo"
+	     "\"@sergey\") ser√°n enviados a Twitter.">>;
 	twitter_username -> <<"Nombre de usuario Twitter:">>;
-	twitter_password -> <<"ContraseÒa Twitter:">>;
-	twitter_auto -> <<"Enviar autom·ticamente mis Twoorls a Twitter?">>; %% jdilelle says: 'Twools' vs 'twools' ?
+	twitter_password -> <<"Contrase√±a Twitter:">>;
+	twitter_auto -> <<"Enviar autom√°ticamente mis Twoorls a Twitter?">>;
 	submit -> <<"enviar">>;
 	
 	%% error messages
 	{missing_field, Field} ->
 	    [<<"El campo ">>, Field, <<" es requerido">>];
 	{username, Val} ->
-	    [<<"En nombre de usuario '">>, Val, <<"' no est· disponible">>];
+	    [<<"En nombre de usuario '">>, Val, <<"' no est√° disponible">>];
 	{invalid_username, Val} ->
 	    [<<"El nombre de usuatio '">>, Val,
-	     <<"' no es v·lido. Se aceptan solo letras, n˙meros y rayita de subrayado ('_') ">>];
+	     <<"' no es v√°lido. Se aceptan solo letras, n√∫meros y rayita de subrayado ('_') ">>];
 	invalid_login ->
-	    <<"Nombre de usuario o contraseÒa inv·lidas">>;
+	    <<"Nombre de usuario o contrase√±a inv√°lidas">>;
 	{too_short, Field, Min} ->
 	    [<<"El campo ">>, Field, <<" es demasiado corto (">>, Min,
 	     <<" chars minimum)">>];
 	password_mismatch ->
-	    <<"Las contraseÒas no coinciden">>;
+	    <<"Las contrase√±as no coinciden">>;
 	twitter_unauthorized ->
-	    <<"Twitter no ha aceptado el nombre de usuario y contraseÒa que "
+	    <<"Twitter no ha aceptado el nombre de usuario y contrase√±a que "
 	     "has proporcionado">>;
 	twitter_authorization_error ->
-	    <<"Fallo conectandose a Twitter. Por favor vuelva a intentar m·s tarde.">>;
+	    <<"Fallo conectandose a Twitter. Por favor vuelva a intentar m√°s tarde.">>;
 	{invalid_url, Field} ->
 	    [<<"El campo URL ">>, Field, <<" debe comenzar con 'http://'">>];
 	
 	%% confirmation messages
 	settings_updated ->
-	    [<<"Su configuraciÛn ha sido aplicada">>]
+	    [<<"Su configuraci√≥n ha sido aplicada">>]
     end.

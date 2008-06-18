@@ -4,7 +4,7 @@
     <img src="<% Registration %>" />
   </div>
   <div class="twoorl_metadata">
-    <p>Registration over 7 days</p>
+    <p>Registration over last 7 days</p>
   </div>
 </div>
 <div class="twoorl">
@@ -12,6 +12,6 @@
     <img src="<% Updates %>" />
   </div>
   <div class="twoorl_metadata">
-    <p>Updates (twoots) over 7 days</p>
+    <p>Twoorls over last 7 days</p>
   </div>
 </div>

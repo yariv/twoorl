@@ -21,6 +21,10 @@
 -module(stats_controller).
 -compile(export_all).
 
+%% disabled for now
+private() ->
+    true.
+
 index(_A) ->
     Registration = twoorl_stats:call({graph, registration, 7}),
     Updates = twoorl_stats:call({graph, twoot, 7}),

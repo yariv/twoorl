@@ -40,10 +40,8 @@ index(A) ->
 		    [?Data(A, {Username, Email}),
 		     {ewc, ui_msgs, [A, Errs1]}];
 	       true ->
-		    %% todo set cookie
 		    Usr = register_usr(Username, Email, Password),
-		    spawn(twoorl_stats, call, [{record, registration}]),
-		    login_controller:do_login(Usr)
+		    login_controller:do_login(A, Usr)
 	    end;
 	_ ->
 	    [?Data(A, {[], []}), {data, []}]

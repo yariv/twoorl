@@ -97,7 +97,7 @@ bundle(Tag) ->
 	%% error messages
 	{missing_field, Field} ->
 	    [<<"O ">>, Field, <<" campo é obrigatório">>];
-	{username, Val} ->
+	{username_taken, Val} ->
 	    [<<"O nome de usuário '">>, Val, <<"' já está sendo utilizado">>];
 	{invalid_username, Val} ->
 	    [<<"O nome de usuário '">>, Val,

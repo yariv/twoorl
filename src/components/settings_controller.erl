@@ -93,7 +93,7 @@ get_validation_fun(_) ->
 
 verify_twitter_credentials(_, [], _) -> [];
 verify_twitter_credentials(_, _, []) -> [];
-verify_twitter_credentials(1, Username, Password) ->
+verify_twitter_credentials(true, Username, Password) ->
     case twitter_client:account_verify_credentials(Username, Password, []) of
         true -> [];
         false -> [twitter_unauthorized]

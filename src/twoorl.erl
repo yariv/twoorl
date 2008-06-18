@@ -28,9 +28,8 @@ start(_Type, _Args) ->
 
 start_phase(mysql, _, _) ->
     {ok, DBConfig} = application:get_env(twoorl, dbconns),
-    [begin
-        mysql_connect(PoolSize, Hostname, User, Password, Database, true)
-    end || {Hostname, User, Password, Database, PoolSize} <- DBConfig],
+    [mysql_connect(PoolSize, Hostname, User, Password, Database)
+     || {Hostname, User, Password, Database, PoolSize} <- DBConfig],
     ok;
 
 start_phase(compile, _, _) ->
@@ -52,28 +51,26 @@ start_phase(mnesia, _, _) ->
     end,
     ExistingTables = mnesia:system_info(tables) -- [schema],
     {ok, Tables} = application:get_env(twoorl, tables),
-    [begin
-        create_table(session)
-    end || Table <- Tables, not lists:member(Table, ExistingTables)],
+    [create_table(Table) ||
+	Table <- Tables, not lists:member(Table, ExistingTables)],
     ok.
 
 create_table(session) ->
     mnesia:create_table(session, [{attributes, record_info(fields, session)}]),
     ok.
 
-mysql_connect(0, _, _, _, _, _) -> ok;
-mysql_connect(PoolSize, Hostname, User, Password, Database, true) ->
-    erlydb:start(mysql, [
-        {hostname, Hostname},
-        {username, User},
-        {password, Password},
-        {database, Database},
-        {logfun, fun twoorl_util:log/4}
-    ]),
-	mysql_connect(PoolSize - 1, Hostname, User, Password, Database, false);
-mysql_connect(PoolSize, Hostname, User, Password, Database, false) ->
-    mysql:connect(erlydb_mysql, Hostname, undefined, User, Password, Database, true),
-    mysql_connect(PoolSize - 1, Hostname, User, Password, Database, false).
+mysql_connect(PoolSize, Hostname, User, Password, Database) ->
+    erlydb:start(
+      mysql, [{hostname, Hostname},
+	      {username, User},
+	      {password, Password},
+	      {database, Database},
+	      {logfun, fun twoorl_util:log/4}]),
+    lists:foreach(
+      fun() ->
+	      mysql:connect(erlydb_mysql, Hostname, undefined, User, Password,
+			    Database, true)
+      end, lists:seq(1, PoolSize - 1)).
 
 compile() ->
     compile([]).
@@ -157,10 +154,12 @@ init_mysql() ->
 		 [{hostname, ?DB_HOSTNAME},
 		  {username, ?DB_USERNAME}, {password, ?DB_PASSWORD},
 		  {database, ?DB_DATABASE},
-		  {logfun, fun twoorl_util:log/4}]),
+		  {logfun, fun log/4}]),
     lists:foreach(
       fun(_) ->
 	      mysql:connect(erlydb_mysql, ?DB_HOSTNAME, undefined,
 			    ?DB_USERNAME, ?DB_PASSWORD, ?DB_DATABASE, true)
       end, lists:seq(1, ?DB_POOL_SIZE)).
 
+log(Module, Line, Level, FormatFun) ->
+    twoorl_util:log(Module, Line, Level, FormatFun).

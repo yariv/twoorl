@@ -43,6 +43,7 @@ index(A) ->
 		  end),
 	    Errs1 = 
 		if Errs == [] ->
+%%			twoorl_stats:cast({record, site_login}),
 			Hash = crypto:sha([usr:username(Usr), Password]),
 			case usr:password(Usr) of
 			    Hash ->
@@ -54,8 +55,7 @@ index(A) ->
 			Errs
 		end,
 	    if Errs1 == [] ->
-		    %% spawn(twoorl_stats, call, [{record, site_login}]),
-		    do_login(Usr);
+		    do_login(A, Usr);
 	       true ->
 		    [?Data(A, undefined),
 		     {ewc, ui_msgs, [A, Errs1]}]

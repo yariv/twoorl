@@ -97,7 +97,7 @@ bundle(Tag) ->
 	%% error messages
 	{missing_field, Field} ->
 	    [Field, <<" обязательное поле">>];
-	{username, Val} ->
+	{username_taken, Val} ->
 	    [<<"Имя '">>, Val, <<"' уже занято">>];
 	{invalid_username, Val} ->
 	    [<<"Имя '">>, Val,
