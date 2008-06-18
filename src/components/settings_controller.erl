@@ -131,8 +131,8 @@ str(Val) -> Val.
 checked(0) -> [];
 checked(false) -> [];
 checked(1) -> <<"checked">>;
-checked(true) -> <<"checked">>.
-    
+checked(true) -> <<"checked">>;
+checked(undefined) -> [].    
     
 is_checked(Param, Params) ->
     proplists:get_value(Param, Params)  == "on".
