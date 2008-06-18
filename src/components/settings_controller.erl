@@ -36,44 +36,44 @@ process_request(A, Usr) ->
 			      Usr, TwitterUsername, TwitterPassword,
 			      TwitterEnabled, GravatarEnabled, Background),
 			twoorl_util:update_session(A,Usr2),
-			[settings_updated];
+			[{updated, {<<"Your settings">>, plural}}];
 		    _ ->
 			[]
 		end,
-	    [?Data(
-		A,
-		{TwitterUsername, TwitterPassword,
-		 checked(TwitterEnabled), checked(GravatarEnabled),
-		 str(Background)}),
-	     {ewc, ui_msgs, [A, Errs3, Messages]}];
+	    {data, {TwitterUsername, TwitterPassword,
+		    checked(TwitterEnabled), checked(GravatarEnabled),
+		    str(Background), Errs3,
+		    Messages}};
 	_ ->
-	    [?Data(
-		A, {str(usr:twitter_username(Usr)),
+	    {data, {str(usr:twitter_username(Usr)),
 		    str(usr:twitter_password(Usr)),
 		    checked(usr:twitter_enabled(Usr)),
 		    checked(usr:gravatar_enabled(Usr)),
-		    str(usr:background(Usr))}),
-	     {data, []}]
+		    str(usr:background(Usr)),
+		    [],
+		    []}}
     end.
 
-get_validation_fun(true) ->
-    fun(Field, Val) ->
-	    case Val of
-		[] ->
-		    FName = case Field of
-				"twitter_username" ->
-				    "Twitter username";
+get_validation_fun(TwitterEnabled) ->
+    if TwitterEnabled ->
+	    fun(Field, Val) ->
+		    case Val of
+			[] ->
+			    FName = case Field of
+					"twitter_username" ->
+					    "Twitter username";
 					"twitter_password" ->
-				    "Twitter password"
-			    end,
-		    {error, {missing_field, FName}};
-		_ ->
+					    "Twitter password"
+				    end,
+			    {error, {missing_field, FName}};
+			_ ->
+			    ok
+		    end
+	    end;
+       true ->
+	    fun(_Field, _Val) ->
 		    ok
 	    end
-    end;
-get_validation_fun(_) ->
-    fun(_Field, _Val) ->
-	    ok
     end.
 
 verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->

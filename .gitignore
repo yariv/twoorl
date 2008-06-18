@@ -5,3 +5,5 @@ Mnesia.nonode@nohost/
 *.log
 #*#
 .#*
+twoorl.mnesia/
+twoorl_stats

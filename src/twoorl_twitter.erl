@@ -18,11 +18,21 @@
 %% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
 %% @copyright Yariv Sadan, 2008
 
--module(reply).
+-module(twoorl_twitter).
 -compile(export_all).
+-include("twoorl.hrl").
 
-save_replies(MsgId, Recipients) ->
-    Replies = [begin
-        reply:new_with( [{usr_id, Recipient:id()}, {msg_id, MsgId}])
-    end || Recipient <- Recipients],
-    reply:insert(Replies).
+send_tweet(Usr, Msg) ->
+    Res = twitter_client:status_update(
+        Usr:twitter_username(),
+        Usr:twitter_password(),
+        [{"status", Msg:body_raw()}]
+    ),
+    case Res of
+        {error, _} -> 
+            ?Warn("error sending tweet ~p ~p", [Msg:id(), Res]),
+            msg:update([{twitter_status, ?TWITTER_SENT_ERR}], {id, '=', Msg:id()});
+	    _ ->
+            spawn(twoorl_stats, call, [{record, twitter_crosspost}]),
+            msg:update([{twitter_status, ?TWITTER_SENT_OK}], {id, '=', Msg:id()})
+    end.

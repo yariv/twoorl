@@ -26,13 +26,54 @@
 start(_Type, _Args) ->
     twoorl_sup:start_link([]).
 
-start() ->
-    application:start(inets),
-    init_mnesia(),
-    TablesInfo = [{session, [{attributes, record_info(fields, session)}]}],
-    create_mnesia_tables(TablesInfo),
-    init_mysql(),
-    compile().
+start_phase(mysql, _, _) ->
+    {ok, DBConfig} = application:get_env(twoorl, dbconns),
+    [begin
+        mysql_connect(PoolSize, Hostname, User, Password, Database, true)
+    end || {Hostname, User, Password, Database, PoolSize} <- DBConfig],
+    ok;
+
+start_phase(compile, _, _) ->
+    twoorl:compile(),
+    ok;
+
+%% Having the mnesia store on a separate but connected node with a module
+%% to handle its maintenance would move a lot of this foo out of the
+%% application stack. Eventually that really needs to happen. -- nkg
+start_phase(mnesia, _, _) ->
+    %% Mnesia should have been started already, because of that the schema
+    %% is in memory if the schema doesn't already exist on disc. If so we
+    %% change the type so that it writes to the mnesia dir we set. -- nkg
+    case mnesia:table_info(schema, storage_type) of
+        ram_copies -> 
+            mnesia:change_table_copy_type(schema, node(), disc_copies);
+        _ ->
+            ok
+    end,
+    ExistingTables = mnesia:system_info(tables) -- [schema],
+    {ok, Tables} = application:get_env(twoorl, tables),
+    [begin
+        create_table(session)
+    end || Table <- Tables, not lists:member(Table, ExistingTables)],
+    ok.
+
+create_table(session) ->
+    mnesia:create_table(session, [{attributes, record_info(fields, session)}]),
+    ok.
+
+mysql_connect(0, _, _, _, _, _) -> ok;
+mysql_connect(PoolSize, Hostname, User, Password, Database, true) ->
+    erlydb:start(mysql, [
+        {hostname, Hostname},
+        {username, User},
+        {password, Password},
+        {database, Database},
+        {logfun, fun twoorl_util:log/4}
+    ]),
+	mysql_connect(PoolSize - 1, Hostname, User, Password, Database, false);
+mysql_connect(PoolSize, Hostname, User, Password, Database, false) ->
+    mysql:connect(erlydb_mysql, Hostname, undefined, User, Password, Database, true),
+    mysql_connect(PoolSize - 1, Hostname, User, Password, Database, false).
 
 compile() ->
     compile([]).
@@ -47,12 +88,25 @@ compile(Opts) ->
     erlyweb:compile(compile_dir(default),
 		    [{erlydb_driver, mysql}, {erlydb_timeout, 20000} | Opts]).
 
+compile_dir(auto) ->
+    {ok, CWD} = file:get_cwd(), CWD;
+compile_dir(default) ->
+    ?APP_PATH;
+compile_dir(appconfig) ->
+    {ok, CDir} = application:get_env(twoorl, compile_dir),
+    CDir;
 compile_dir(Dir) ->
-    case Dir of
-        auto -> {ok, CWD} = file:get_cwd(), CWD;
-        default -> ?APP_PATH;
-        _ -> Dir
-    end.
+    Dir.
+
+%% --- The rest of these functions will be deprecated --- %%
+
+start() ->
+    application:start(inets),
+    init_mnesia(),
+    TablesInfo = [{session, [{attributes, record_info(fields, session)}]}],
+    create_mnesia_tables(TablesInfo),
+    init_mysql(),
+    compile().
 
 init_mnesia() ->
     ?L("creating schema"),
@@ -97,7 +151,6 @@ create_table(Table, Def) ->
             ?L("create table error"),
             exit(Err2)
     end.
-
 
 init_mysql() ->
     erlydb:start(mysql,
