@@ -63,23 +63,18 @@ send(A) ->
 					   Usr:gravatar_enabled()},
 					  {twitter_status, TwitterStatus}]),
 		      Msg1 = Msg:save(),
+		      spawn(twoorl_stats, call, [{record, twoot}]),
 
 		      if TwitterEnabled andalso RecipientNames == [] ->
-			      %% yey concurrency
-			      spawn(
-				fun() ->
-					send_tweet(Usr, Msg1)
-				end);
+			      spawn(twoorl_twitter, send_tweet, [Usr, Msg1]); %% yey concurrency
 			 true ->
 			      ok
 		      end,
 
 		      %% yey concurrency
-		      spawn(
-			fun() ->
-				save_replies(Msg1:id(), RecipientNames)
-			end),
-		      
+              RecipientIds =  usr:find({username, in, lists:usort([Name || Name <- RecipientNames])}),
+		      spawn(reply, save_replies, [Msg1:id(), RecipientIds]),
+
 		      case proplists:get_value("get_html", Params) of
 			  "true" ->
 			      Msg2 = msg:created_on(
@@ -94,14 +89,6 @@ send(A) ->
 		      exit(Errs)
 	      end
       end).
-
-save_replies(MsgId, RecipientNames) ->
-    RecipientNames1 = [Name || Name <- RecipientNames],
-    Recipients = 
-	usr:find({username, in, lists:usort(RecipientNames1)}),
-    RecipientIds =
-	[Recipient:id() || Recipient <- Recipients],
-    reply:save_replies(MsgId, RecipientIds).
 
 follow(A) ->
     twoorl_util:auth(
@@ -162,24 +149,3 @@ follow(A) ->
 		      exit(Errs2)
 	      end
       end).
-
-	      
-send_tweet(Usr, Msg) ->
-    Username = Usr:twitter_username(),
-    Password = Usr:twitter_password(),
-    
-    Res = twitter:update(Username, Password, Msg:body_raw()),
-
-    UpdateFun = fun(Status) ->
-			msg:update([{twitter_status, Status}],
-				   {id,'=',Msg:id()})
-		end,
-    case Res of
-	{ok, {{_Protocol, 200, _},_Headers, _Body}} ->
-	    UpdateFun(?TWITTER_SENT_OK);
-	_ ->
-	    ?Warn("error sending tweet ~p ~p", [Msg:id(), Res]),
-	    UpdateFun(?TWITTER_SENT_ERR)
-    end.
-
-    

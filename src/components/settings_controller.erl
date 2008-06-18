@@ -78,7 +78,7 @@ get_validation_fun(true) ->
 		    FName = case Field of
 				"twitter_username" ->
 				    "Twitter username";
-					"twitter_password" ->
+				"twitter_password" ->
 				    "Twitter password"
 			    end,
 		    {error, {missing_field, FName}};
@@ -91,24 +91,14 @@ get_validation_fun(_) ->
 	    ok
     end.
 
-verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->
-    if (TwitterEnabled andalso not (TwitterUsername == [])
-	andalso not (TwitterPassword == [])) ->
-	    case twitter:verify_credentials(
-		   TwitterUsername, TwitterPassword) of
-		ok ->
-		    [];
-		{error, unauthorized} ->
-		    [twitter_unauthorized];
-		{error, Err} ->
-		    ?Error("twitter authorization error: ~p ~p ~p",
-			   [TwitterUsername, TwitterPassword,
-			    Err]),
-		    [twitter_authorization_error]
-	    end;
-       true ->
-	    []
-    end.
+verify_twitter_credentials(_, [], _) -> [];
+verify_twitter_credentials(_, _, []) -> [];
+verify_twitter_credentials(1, Username, Password) ->
+    case twitter_client:account_verify_credentials(Username, Password, []) of
+        true -> [];
+        false -> [twitter_unauthorized]
+    end;
+verify_twitter_credentials(_, _, _) -> [].
 
 update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
 	  GravatarEnabled, Background, Language) ->

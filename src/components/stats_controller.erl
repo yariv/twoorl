@@ -13,15 +13,15 @@
 %% You should have received a copy of the GNU General Public License
 %% along with Twoorl.  If not, see <http://www.gnu.org/licenses/>.
 %%
-%% Copyright Yariv Sadan, 2008
+%% Copyright Nick Gerakines, 2008
 %%
-%% @author Yariv Sadan <yarivsblog@gmail.com> [http://yarivsblog.com]
-%% @copyright Yariv Sadan, 2008
+%% @author Nick Gerakines <nick@gerakinesnet> [http://blog.socklabs.com/]
+%% @copyright Nick Gerakines, 2008
 
--module(reply).
+-module(stats_controller).
 -compile(export_all).
 
-save_replies(MsgId, Recipients) ->
-    Replies = [reply:new_with([{usr_id, Recipient:id()}, {msg_id, MsgId}])
-	       || Recipient <- Recipients],
-    reply:insert(Replies).
+index(_A) ->
+    Registration = twoorl_stats:call({graph, registration, 7}),
+    Updates = twoorl_stats:call({graph, twoot, 7}),
+    {data, {Registration, Updates}}.

@@ -6,3 +6,5 @@ Mnesia.nonode@nohost/
 #*#
 .#*
 .DS_Store
+twoorl.mnesia/
+twoorl_stats

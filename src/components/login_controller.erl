@@ -54,7 +54,8 @@ index(A) ->
 			Errs
 		end,
 	    if Errs1 == [] ->
-		    do_login(A, Usr);
+		    %% spawn(twoorl_stats, call, [{record, site_login}]),
+		    do_login(Usr);
 	       true ->
 		    [?Data(A, undefined),
 		     {ewc, ui_msgs, [A, Errs1]}]

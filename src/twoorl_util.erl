@@ -376,7 +376,7 @@ get_bundle(A) ->
 	    Usr ->
 		Lang = Usr:language(),
 		case lists:keysearch(Lang, 1, bundles()) of
-		    none ->
+		    false ->
 			?Warn("undefined language: ~p ~p", 
 			      [Usr:username(), Lang]),
 			twoorl_eng;
