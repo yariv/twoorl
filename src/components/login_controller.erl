@@ -92,15 +92,15 @@ do_login(A, Usr) ->
 		   end
 	   end,
 
-    twoorl_util:update_session(A, Usr, Key),
+    twoorl_util:update_session(A, Usr1, Key),
     spawn(fun() ->
-		  usr:update([{session_key, Key}], {id,'=',usr:id(Usr)})
+		  usr:update([{session_key, Key}], {id,'=',usr:id(Usr1)})
 	  end),
     Response = [twoorl_util:cookie("key", Key)],
     
-    %% set the language cookie for the session
+    %% set the language cookie for the session if it's not defined
     Response1 = if LangCookie == undefined ->
-			case Usr:language() of
+			case Usr1:language() of
 			    undefined ->
 				Response;
 			    Other ->
