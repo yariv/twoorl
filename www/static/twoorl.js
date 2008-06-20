@@ -16,7 +16,7 @@ $(function() {
 	var lang = select.options[select.selectedIndex].value;
 	document.cookie =
 	    'lang=' + lang + '; expires=Wed, 1 Jan 2020 00:00:00 UTC; path=/';
-	location.reload();
+	location.href = location.href;
     });
 	
 });
