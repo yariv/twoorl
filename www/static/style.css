@@ -8,7 +8,7 @@ form input {
   margin-bottom: 5px;
 }
 
-.section1, .paging_content {
+.section1, .paging_content, #txt_form {
   margin-bottom: 10px;
 }
 
@@ -150,4 +150,9 @@ fieldset {
 .user_icon {
   text-align: center;
   padding: 3px;
+}
+
+#language_select_box {
+  margin: 10px 0px 10px 0px;
+  text-align: center
 }

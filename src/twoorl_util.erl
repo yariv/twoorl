@@ -22,6 +22,9 @@
 -compile(export_all).
 -include("twoorl.hrl").
 
+cookie(Key, Val) ->
+    yaws_api:setcookie(Key, Val, "/", "Wed 01-01-2020 00:00:00 GMT").
+
 gen_key() ->
     gen_key(?DEFAULT_KEY_SIZE).
 
@@ -370,15 +373,15 @@ bundles() ->
 
 get_bundle(A) ->
     Module1 =
-	case get_usr(A) of
+	case erlyweb_util:get_cookie("lang", A) of
 	    undefined ->
 		twoorl_eng;
-	    Usr ->
-		Lang = Usr:language(),
-		case lists:keysearch(Lang, 1, bundles()) of
+	    Lang ->
+		Lang1 = list_to_binary(Lang),
+		case lists:keysearch(Lang1, 1, bundles()) of
 		    false ->
 			?Warn("undefined language: ~p ~p", 
-			      [Usr:username(), Lang]),
+			      [get_usr(A), Lang1]),
 			twoorl_eng;
 		    {value, {_, _, Module}} -> Module
 		end

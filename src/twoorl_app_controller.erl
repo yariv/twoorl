@@ -75,7 +75,7 @@ auth(A) ->
 	    {A, false};
 	Val ->
 	    Key = list_to_binary(Val),
-	    case lookup(Key) of
+	    case lookup(A, Key) of
 		undefined ->
 		    {A, false};
 		Session ->
@@ -85,7 +85,7 @@ auth(A) ->
 	    end
     end.
 
-lookup(Key) ->
+lookup(A, Key) ->
     case mnesia:dirty_read(session, Key) of
 	[] ->
 	    case usr:find_first({session_key,'=',Key}) of

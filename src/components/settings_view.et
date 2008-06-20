@@ -1,13 +1,9 @@
 <%@ index([{B, {TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Background, SelectedLanguage}},
+    GravatarEnabledChecked, Background}},
     UiMsgs]) %>
 <div class="t2"><% B(settings_cap) %></div>
 <% UiMsgs %>
 <form action="/settings" method="post">
-  <div class="section">
-    <div class="t3">Language</div>
-    <div><% language_box(SelectedLanguage) %></div>
-  </div>
   <div class="section">
     <div class="t3">Gravatar</div>
     <div><% B(use_gravatar) %> <input name="gravatar_enabled" type="checkbox" <% GravatarEnabledChecked %>/></div>
@@ -29,10 +25,4 @@
     <div><br/><input type="submit" value="submit"/></div>
   </div>
 </form>
-
-<%@ language_box(SelectedLanguage) %><select name="lang">
-	<% [option(Bundle, SelectedLanguage) ||
-	   Bundle <- twoorl_util:bundles()] %>
-      </select>
-<%@ option({Val, Opt, _Bundle}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected">>; true -> [] end %>><% Opt %></option>
 

@@ -33,4 +33,4 @@ index(A, Ewc) ->
 	     true ->
 		{undefined, {data, []}}
 	end,
-    [?Data(A, Username), Navbar, Ewc].
+    [?Data(A, Username), Navbar, Ewc, {ewc, language_select, [A]}].

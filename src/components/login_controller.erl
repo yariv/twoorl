@@ -74,6 +74,40 @@ get_usr(Username) ->
 
 do_login(A, Usr) ->
     Key = twoorl_util:gen_key(),
+    LangCookie = erlyweb_util:get_cookie("lang", A),
+    Usr1 = case LangCookie of
+	       undefined ->
+		   Usr;
+	       Lang ->
+		   LangBin = list_to_binary(Lang),
+		   case Usr:language() of
+		       LangBin ->
+			   Usr;
+		       _ ->
+			   spawn(fun() -> 
+					 usr:update([{language, Lang}],
+						    {id,'=',Usr:id()})
+				 end),
+			   usr:language(Usr, Lang)
+		   end
+	   end,
+
     twoorl_util:update_session(A, Usr, Key),
-    usr:update([{session_key, Key}], {id,'=',usr:id(Usr)}),
-    {response, [yaws_api:setcookie("key", Key), ewr]}.
+    spawn(fun() ->
+		  usr:update([{session_key, Key}], {id,'=',usr:id(Usr)})
+	  end),
+    Response = [twoorl_util:cookie("key", Key)],
+    
+    %% set the language cookie for the session
+    Response1 = if LangCookie == undefined ->
+			case Usr:language() of
+			    undefined ->
+				Response;
+			    Other ->
+				[twoorl_util:cookie("lang", Other) | Response]
+			end;
+		   true ->
+			Response
+		end,
+    {response, [{ewr, home} | Response1]}.
+

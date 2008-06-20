@@ -1,0 +1,10 @@
+<%@ index(SelectedLanguage) %>
+<div id="language_select_box">
+<select id="language_select" name="lang">
+<% [option(Bundle, SelectedLanguage) ||
+   Bundle <- twoorl_util:bundles()] %>
+</select>
+</div>
+
+<%@ option({Val, Opt, _Bundle}, Selected) %><option value="<% Val %>" <% if Selected == Val -> <<"selected=\"selected\"">>; true -> [] end %>><% Opt %></option>
+
