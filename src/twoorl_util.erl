@@ -368,7 +368,8 @@ bundles() ->
      {<<"kor">>, <<"Korean">>, twoorl_kor},
      {<<"por">>, <<"Portuguese (Brazilian)">>, twoorl_por_br},
      {<<"ru">>, <<"Russian">>, twoorl_rus},
-     {<<"spa">>, <<"Spanish">>, twoorl_spa}].
+     {<<"spa">>, <<"Spanish">>, twoorl_spa},
+     {<<"deu">>, <<"German">>, twoorl_deu}].
 
 
 get_bundle(A) ->
