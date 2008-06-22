@@ -44,7 +44,7 @@ show(A, UserIds, Opts) ->
 		true ->
 		    {'not', {spam,'=',1}};
 		_ ->
-		    undefined
+		    true
 	    end,
     %% this function is a prime optimization candidate
     Where1 = 
@@ -58,7 +58,12 @@ show(A, UserIds, Opts) ->
     {replace, 
      {ewc, paging,
       [A, fun(Limit) ->
-		  msg:find(Where1, [OrderBy, Limit])
+		  case Where1 of
+		      undefined ->
+			  msg:find_with([OrderBy, Limit]);
+		      _ ->
+			  msg:find(Where1, [OrderBy, Limit])
+		  end
 	  end,
        fun(Msgs) ->
 	       {ewc, timeline, show_msgs, [A, Msgs, Opts]}
