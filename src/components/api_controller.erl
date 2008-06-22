@@ -19,7 +19,7 @@
 %% @copyright Yariv Sadan, 2008
 
 -module(api_controller).
--export([send/1, follow/1]).
+-export([send/1, follow/1, toggle_twitter/1]).
 -include("twoorl.hrl").
 
 send(A) ->
@@ -157,3 +157,22 @@ follow(A) ->
 		      exit(Errs2)
 	      end
       end).
+
+toggle_twitter(A) ->
+    twoorl_util:auth(
+      A,
+      fun(Usr) ->
+	      Params = yaws_api:parse_post(A),
+	      Enabled =
+		  case proplists:get_value("value", Params) of
+		      "true" -> 1;
+		      "false" -> 0;
+		      %% TODO need better error handling
+		      Val -> exit({unexpected_value, Val})
+		  end,
+	      Usr1 = usr:twitter_enabled(Usr, Enabled),
+	      twoorl_util:update_session(A, Usr1),
+	      usr:update([{twitter_enabled, Enabled}], {id,'=',Usr:id()}),
+	      {response, [{html, <<"ok">>}]}
+      end).
+	      

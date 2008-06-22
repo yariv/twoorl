@@ -42,7 +42,7 @@ function follow(username, val) {
     $.post("/api/follow",
 	   {"username": username,
 	    "value": val},
-	   function(Res) {
+	   function(res) {
 	       if (val == "1") {
 		   $("#follow").hide();
 		   $("#unfollow").show();
@@ -53,3 +53,14 @@ function follow(username, val) {
 	   });
 	   
 }
+
+function toggle_twitter(input) {
+    $.post("/api/toggle_twitter",
+	   {"value": input.value == "on"},
+	   function(res) {
+	       if (res != "ok") {
+		   alert("Toggle Twitter failed");
+	       }
+	   });
+}
+
