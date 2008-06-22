@@ -1,8 +1,8 @@
 <%@ index([{B, {Username,TwitterEnabled}}, Timeline]) %>
 <table id="txt_table">
   <tr>
-    <td width="100%"><div class="t1"><% B(upto) %></div></td>
-    <td align="right"><div id="chars">140<div></td>
+    <td><div class="t1"><% B(upto) %></div></td>
+    <td align="right"><div id="chars">140</div></td>
   </tr>
   <tr>
     <td colspan="2" align="center">

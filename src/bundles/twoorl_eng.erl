@@ -18,6 +18,9 @@
 
 bundle(Tag) ->
     case Tag of
+	
+	language -> <<"english">>;
+	
 	%% layout
 	login -> <<"login">>;
 	register -> <<"register">>;

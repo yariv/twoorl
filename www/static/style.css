@@ -156,3 +156,5 @@ fieldset {
   margin: 10px 0px 10px 0px;
   text-align: center
 }
+
+.gravatar { border:0px; }

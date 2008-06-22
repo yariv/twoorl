@@ -277,8 +277,9 @@ update_session(A, Usr, Key) ->
 
 
 gravatar_icon(GravatarId) ->
-    [<<"<img border=\"0\" src=\"http://www.gravatar.com/avatar.php?size=32"
-      "&gravatar_id=">>,
+    [<<"<img alt=\"gravatar\" class=\"gravatar\" "
+      "src=\"http://www.gravatar.com/avatar.php?"
+      "size=32&amp;gravatar_id=">>,
      GravatarId, <<"\"/>">>].
 
 gravatar_id(Email) ->
