@@ -366,6 +366,7 @@ bundles() ->
     [{<<"eng">>, <<"English">>, twoorl_eng},
      {<<"fra">>, <<"French">>, twoorl_fra},
      {<<"kor">>, <<"Korean">>, twoorl_kor},
+     {<<"pol">>, <<"Polish">>, twoorl_pol},
      {<<"por">>, <<"Portuguese (Brazilian)">>, twoorl_por_br},
      {<<"ru">>, <<"Russian">>, twoorl_rus},
      {<<"spa">>, <<"Spanish">>, twoorl_spa}].
