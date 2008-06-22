@@ -364,14 +364,13 @@ with_bundle(A, Data) ->
 %% codes taken from http://www.loc.gov/standards/iso639-2/php/code_list.php
 bundles() ->
     [{<<"eng">>, <<"English">>, twoorl_eng},
+     {<<"deu">>, <<"German">>, twoorl_deu},
      {<<"fra">>, <<"French">>, twoorl_fra},
      {<<"kor">>, <<"Korean">>, twoorl_kor},
      {<<"pol">>, <<"Polish">>, twoorl_pol},
      {<<"por">>, <<"Portuguese (Brazilian)">>, twoorl_por_br},
      {<<"ru">>, <<"Russian">>, twoorl_rus},
-     {<<"spa">>, <<"Spanish">>, twoorl_spa},
-     {<<"deu">>, <<"German">>, twoorl_deu}].
-
+     {<<"spa">>, <<"Spanish">>, twoorl_spa}].
 
 get_bundle(A) ->
     Module1 =
