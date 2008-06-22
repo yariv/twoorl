@@ -27,7 +27,7 @@ bundle(Tag) ->
 	get_source ->
 	    <<"Get the <a href=\"http://code.google.com/p/twoorl\">"
 	     "source code</a>">>;
-
+	
 	%% navbar
 	home -> <<"home">>;
 	replies -> <<"replies">>;
@@ -53,6 +53,7 @@ bundle(Tag) ->
 	upto -> <<"What are you up to?">>;
 	twitter_msg -> <<"Automatic posting to Twitter enabled for "
 			"non-replies">>;
+	send -> <<"send">>;
 
 	%% main page
 	public_timeline -> <<"Public timeline">>;
@@ -122,5 +123,11 @@ bundle(Tag) ->
 	
 	%% confirmation messages
 	settings_updated ->
-	    [<<"Your settings have been updated successfully">>]
+	    [<<"Your settings have been updated successfully">>];
+
+	%% miscellaneous
+	{seconds_ago, Val} -> [Val, <<" seconds ago">>];
+	{minutes_ago, Val} -> [Val, <<" minutes ago">>];
+	{hours_ago, Val} -> [Val, <<" hours ago">>];
+	{days_ago, Val} -> [Val, <<" days ago">>]
     end.

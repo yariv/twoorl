@@ -103,7 +103,8 @@ show_msg(A, Msg, Opts) ->
 		{usr:get_icon_link(Username, GravatarId),
 		 usr:get_link(Username)}
 	end,
-    CreatedOn = msg:get_time_since(Msg),
+    CreatedOn = twoorl_util:i18n(A, msg:get_time_since(Msg)),
+
     IsBig = proplists:get_value(is_big, Opts) == true,
     
     {data, {Username, Icon, Userlink,

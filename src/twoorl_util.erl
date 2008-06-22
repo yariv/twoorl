@@ -53,30 +53,28 @@ join(List, Delim) ->
 	 (Elem, Acc) ->
 	      [Elem, Delim | Acc]
       end, [], lists:reverse(List)).
-	      
-    
-get_seconds_since({datetime, Val}) ->
+
+get_seconds_since({datetime, Val}) ->	      
     get_seconds_since(Val);
 get_seconds_since(Val) ->
     calendar:datetime_to_gregorian_seconds(
       calendar:local_time()) -
-	calendar:datetime_to_gregorian_seconds(Val).
+       calendar:datetime_to_gregorian_seconds(Val).
 
 get_time_since(DateTime) ->
     Diff = 
 	get_seconds_since(DateTime),
-    {Val1, UnitStr} =
+    {Type, Val} =
 	if Diff < 60 ->
-		{Diff, <<"seconds">>};
+		{seconds_ago, Diff};
 	   Diff < 3600 ->
-		{round(Diff / 60), <<"minutes">>};
+		{minutes_ago, round(Diff/60)};
 	   Diff < 86400 ->
-		{round(Diff / 3600), <<"hours">>};
+		{hours_ago, round(Diff/3600)};
 	   true ->
-		{round(Diff / 86400), <<"days">>}
+		{days_ago, round(Diff/86400)}
 	end,
-    [integer_to_list(Val1), 32, UnitStr, <<" ago">>].
-
+    {Type, integer_to_list(Val)}.
 
 auth(A, Fun) ->
     auth(A, Fun, fun() -> {ewr, login} end).
@@ -279,7 +277,8 @@ update_session(A, Usr, Key) ->
 
 
 gravatar_icon(GravatarId) ->
-    [<<"<img border=\"0\" src=\"http://www.gravatar.com/avatar.php?size=32&gravatar_id=">>,
+    [<<"<img border=\"0\" src=\"http://www.gravatar.com/avatar.php?size=32"
+      "&gravatar_id=">>,
      GravatarId, <<"\"/>">>].
 
 gravatar_id(Email) ->
@@ -313,6 +312,7 @@ iolist_fun(Rec, Fun) ->
 
 
 
+%% Used for RSS formatting
 %% Reference: http://cyber.law.harvard.edu/rss/rss.html
 format_datetime({Date = {Year, Month, Day}, {Hour, Minute, Second}}) ->
     Daynum = calendar:day_of_the_week(Date),
@@ -387,7 +387,27 @@ get_bundle(A) ->
 		    {value, {_, _, Module}} -> Module
 		end
 	end,
-    fun(StrId) -> Module1:bundle(StrId) end.			 
+    fun(StrId) ->
+	    %% Some values may not have been translated from English.
+	    %% We catch such exceptions and fall back on the english
+	    %% translation.
+	    case catch Module1:bundle(StrId) of
+		{'EXIT', Err} ->
+		    case Module1 of
+			twoorl_eng ->
+			    %% this is not supposed to happen
+			    exit(Err);
+			_ ->
+			    twoorl_eng:bundle(StrId)
+		    end;
+		Other ->
+		    Other
+	    end
+    end.
+
+i18n(A, Val) ->
+    F = get_bundle(A), F(Val).
+	    
 
 delete_sessions() ->
     Sessions = mnesia:dirty_match_object(#session{_ = '_'}),

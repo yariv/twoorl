@@ -12,7 +12,7 @@
 	  <% if TwitterEnabled -> twitter_msg(B); true ->[] end %>
 	</fieldset>
       </form>
-      <input type="button" id="submit" value="send" onclick="send()"/>
+      <input type="button" id="submit" value="<% B(send) %>" onclick="send()"/>
     </td>
   </tr>
 </table>
