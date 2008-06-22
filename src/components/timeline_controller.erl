@@ -40,21 +40,25 @@ show(A, UserIds) ->
 show(A, UserIds, Opts) ->
     OrderBy = {order_by, {created_on, desc}},
     
+    Where = case proplists:get_value(filter_spam, Opts) of
+		true ->
+		    {'not', {spam,'=',1}};
+		_ ->
+		    undefined
+	    end,
     %% this function is a prime optimization candidate
-    Total = 
+    Where1 = 
 	if UserIds =/= undefined ->
-		msg:count('*', {usr_id, in, UserIds});
+		{'and', [{usr_id, in, UserIds}, Where]};
 	   true ->
-		msg:count('*')
+		Where
 	end,
+    Total = msg:count('*', Where1),
+
     {replace, 
      {ewc, paging,
       [A, fun(Limit) ->
-		  if UserIds =/= undefined ->
-			  msg:find({usr_id,in,UserIds}, [OrderBy, Limit]);
-		     true ->
-			  msg:find_with([OrderBy, Limit])
-		  end
+		  msg:find(Where1, [OrderBy, Limit])
 	  end,
        fun(Msgs) ->
 	       {ewc, timeline, show_msgs, [A, Msgs, Opts]}

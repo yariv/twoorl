@@ -37,3 +37,12 @@ m8() ->
 	      msg:update([{body, Body1}], {id,'=',Msg:id()})
       end, Msgs).
     
+
+m9() ->
+    Users = usr:find({spammer,'=',1}),
+    lists:foreach(
+      fun(Usr) ->
+	      msg:update([{spam, 1}], {usr_id,'=',Usr:id()})
+      end, Users).
+	      
+    

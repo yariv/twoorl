@@ -61,7 +61,8 @@ send(A) ->
 					     Usr:email())},
 					  {usr_gravatar_enabled,
 					   Usr:gravatar_enabled()},
-					  {twitter_status, TwitterStatus}]),
+					  {twitter_status, TwitterStatus},
+					  {spam, Usr:spammer()}]),
 		      Msg1 = Msg:save(),
 
 %%		      twoorl_stats:cast({record, twoorl}),

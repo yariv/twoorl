@@ -26,7 +26,7 @@ index(A) ->
     FeedUrl = <<"/feeds/main/rss">>,
     {response,
      [{body, [?Data(A, twoorl_util:get_feed_link(FeedUrl, <<"RSS">>)),
-	       {ewc, timeline, show, [A]}]},
+	       {ewc, timeline, show, [A, undefined, [{filter_spam, true}]]}]},
        {phased_vars,
 	[{header_items,
 	  [{feed_link, <<"rss+xml">>,
