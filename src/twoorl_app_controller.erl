@@ -28,9 +28,10 @@ hook(A) ->
 	{page, "/"} -> start(A1);
 	{page, "/static" ++ _} = Ewc -> Ewc;
 	{page, "/favicon.ico"} -> {page, "/static/favicon.ico"};
-	{page, [$/ | Username]} ->
+	{page, [$/ | Username] = Path} ->
 	    A2 = yaws_arg:appmoddata(A1, "/users/" ++ Username),
-	    start(A2);
+	    A3 = yaws_arg:add_to_opaque(A2, {paging_path, Path}),
+	    start(A3);
 
 	%% redirect user urls from "/users/[Username]" to "/[Username]"
 	{ewc, users_controller, users_view, catch_all,
