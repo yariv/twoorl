@@ -366,12 +366,12 @@ with_bundle(A, Data) ->
 bundles() ->
     [{<<"eng">>, <<"English">>, twoorl_eng},
      {<<"spa">>, <<"Español">>, twoorl_spa},
-     {<<"deu">>, <<"German">>, twoorl_deu},
+     {<<"deu">>, <<"Deutsch">>, twoorl_deu},
      {<<"fra">>, <<"Français">>, twoorl_fra},
-     {<<"kor">>, <<"Korean">>, twoorl_kor},
-     {<<"pol">>, <<"Polish">>, twoorl_pol},
-     {<<"por">>, <<"Portuguese (Brazilian)">>, twoorl_por_br},
-     {<<"ru">>, <<"Russian">>, twoorl_rus}].
+     {<<"kor">>, <<"한국어">>, twoorl_kor},
+     {<<"pol">>, <<"Polski">>, twoorl_pol},
+     {<<"por">>, <<"Português Brasileiro">>, twoorl_por_br},
+     {<<"ru">>, <<"Русский">>, twoorl_rus}].
 
 get_bundle(A) ->
     Module1 =
