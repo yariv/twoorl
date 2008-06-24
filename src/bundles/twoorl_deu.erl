@@ -54,8 +54,8 @@ bundle(Tag) ->
 
 	%% home page
 	upto -> <<"Was machst du gerade?">>;
-	twitter_msg -> <<"Automatisches Posten bei Twitter angestellt für "
-			"nicht-Antworten">>;
+	twitter_msg -> <<"automatisch auch bei Twitter einstellen "
+			"(bei nicht-Antworten)">>;
 	send -> <<"senden">>;
 
 	%% main page
