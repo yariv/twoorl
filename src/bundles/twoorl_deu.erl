@@ -18,6 +18,9 @@
 
 bundle(Tag) ->
     case Tag of
+
+	language -> <<"Deutsch">>;
+
 	%% layout
 	login -> <<"anmelden">>;
 	register -> <<"registrieren">>;
@@ -51,8 +54,9 @@ bundle(Tag) ->
 
 	%% home page
 	upto -> <<"Was machst du gerade?">>;
-	twitter_msg -> <<"Automatisches Posten bei Twitter angestellt für "
-			"nicht-Antworten">>;
+	twitter_msg -> <<"automatisch auch bei Twitter einstellen "
+			"(bei nicht-Antworten)">>;
+	send -> <<"senden">>;
 
 	%% main page
 	public_timeline -> <<"öffentliche Zeitleiste">>;
@@ -122,5 +126,11 @@ bundle(Tag) ->
 	
 	%% confirmation messages
 	settings_updated ->
-	    [<<"Ihre Einstellungen wurden erfolgreich aktualisiert">>]
+	    [<<"Ihre Einstellungen wurden erfolgreich aktualisiert">>];
+
+	%% miscellaneous
+	{seconds_ago, Val} -> [<<"vor ">>, Val, <<" Sekunden">>];
+	{minutes_ago, Val} -> [<<"vor ">>, Val, <<" Minuten">>];
+	{hours_ago, Val} -> [<<"vor ">>, Val, <<" Stunden">>];
+	{days_ago, Val} -> [<<"vor ">>, Val, <<" Tagen">>]
     end.
