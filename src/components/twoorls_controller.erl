@@ -21,7 +21,7 @@
 -module(twoorls_controller).
 -compile(export_all).
 
-catch_all(_A, [_Username, Id]) ->
+catch_all(A, [_Username, Id]) ->
     %% currently, we ignore the username, but we keep it as a parameter
     %% for future user-based sharding
     case msg:find_id(list_to_integer(Id)) of
@@ -29,8 +29,9 @@ catch_all(_A, [_Username, Id]) ->
 	    exit({not_found, Id});
 	Msg ->
 	    {data, {usr:get_link(Msg:usr_username()),
+		    twoorl_util:gravatar_icon(Msg:usr_gravatar_id()),
 		    Msg:body(),
-		    Msg:get_time_since()}}
+		    twoorl_util:i18n(A, Msg:get_time_since())}}
     end.
     
     
