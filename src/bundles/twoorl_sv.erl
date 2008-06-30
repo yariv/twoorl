@@ -25,11 +25,11 @@ bundle(Tag) ->
 	login -> <<"logga in">>;
 	register -> <<"registrera">>;
 	logged_in_as -> <<"inloggad som">>;
-	settings -> <<"inst‰llningar">>;
+	settings -> <<"inst√§llningar">>;
 	logout -> <<"logga ut">>;
 	get_source ->
-	    <<"H‰mta <a href=\"http://code.google.com/p/twoorl\">"
-	     "k‰llkoden</a>">>;
+	    <<"H√§mta <a href=\"http://code.google.com/p/twoorl\">"
+	     "k√§llkoden</a>">>;
 	
 	%% navbar
 	home -> <<"hem">>;
@@ -39,8 +39,8 @@ bundle(Tag) ->
 
 	%% login page
 	login_cap -> <<"Logga in">>;
-	username -> <<"anv‰ndarnamn">>;
-	password -> <<"lˆsenord">>;
+	username -> <<"anv√§ndarnamn">>;
+	password -> <<"l√∂senord">>;
 	not_member -> <<"Inte medlem?">>;
 	login_submit -> <<"logga in">>;
 
@@ -49,12 +49,12 @@ bundle(Tag) ->
 	% login page section
 	register_cap -> <<"Registrera">>;
 	email -> <<"e-post">>;
-	password2 -> <<"upprepa lˆsenord">>;
+	password2 -> <<"upprepa l√∂senord">>;
 	already_member -> <<"Redan medlem?">>;
 
 	%% home page
 	upto -> <<"Vad pysslar du med?">>;
-	twitter_msg -> <<"Automatisk postning till Twitter aktiverat fˆr "
+	twitter_msg -> <<"Automatisk postning till Twitter aktiverat f√∂r "
 			"icke-svar">>;
 	send -> <<"skicka">>;
 
@@ -63,74 +63,66 @@ bundle(Tag) ->
 
 	%% users page
 	{no_user, Username} ->
-	    [<<"Anv‰ndaren '">>, Username, <<"' finns inte">>];
+	    [<<"Anv√§ndaren '">>, Username, <<"' finns inte">>];
 	{timeline_of, Username} ->
 	    [Username, <<" tidslinje">>];
-	following -> <<"fˆljer">>;
-	followers -> <<"fˆrfˆljare">>;
-	follow -> <<"fˆlj">>;
-	unfollow -> <<"ofˆlj">>;
+	following -> <<"f√∂ljer">>;
+	followers -> <<"f√∂rf√∂ljare">>;
+	follow -> <<"f√∂lj">>;
+	unfollow -> <<"of√∂lj">>;
 
 	%% friends page
 	{friends_of, Userlink} ->
-	    [<<"M‰nniskor ">>, Userlink, <<" fˆljer">>];
+	    [<<"M√§nniskor ">>, Userlink, <<" f√∂ljer">>];
 	{followers_of, Userlink} ->
-	    [Userlink, <<" fˆrfˆljare">>];
+	    [Userlink, <<" f√∂rf√∂ljare">>];
 	{no_friends, Username} ->
-	    [Username, <<" fˆljer ingen">>];
+	    [Username, <<" f√∂ljer ingen">>];
 	{no_followers, Username} ->
-	    [Username, <<" har inga fˆrfˆljare">>];
+	    [Username, <<" har inga f√∂rf√∂ljare">>];
 
 
 	%% settings page
-	settings_cap -> <<"Inst‰llningar">>;
-	use_gravatar -> <<"Anv‰nd <a href=\"http://gravatar.com\" "
+	settings_cap -> <<"Inst√§llningar">>;
+	use_gravatar -> <<"Anv√§nd <a href=\"http://gravatar.com\" "
 			 "target=\"_blank\">Gravatar</a>?">>;
 	profile_bg -> <<"Profilbakgrund">>;
 	profile_bg_help ->
-	    <<"Skriv in url.en fˆr din profilbakgrundsbild "
-	     "(l‰mna blankt fˆr att anv‰nda standardbakgrunden):">>;
+	    <<"Skriv in url.en f√∂r din profilbakgrundsbild "
+	     "(l√§mna blankt f√∂r att anv√§nda standardbakgrunden):">>;
 	twitter_help ->
-	    <<"Du kan tillhandahÂlla dina Twitterkontouppgifter fˆr att fÂ"
+	    <<"Du kan tillhandah√•lla dina Twitterkontouppgifter f√∂r att f√•"
 	     "dina twoorls automatiskt postade till Twitter.<br/><br/>"
-	     "Bara twoorls som inte innehÂller svar (ex."
+	     "Bara twoorls som inte inneh√•ller svar (ex."
 	     "\"@sergey\") kommer att postas till Twitter">>;
-	twitter_username -> <<"Twitter anv‰ndarnamn:">>;
-	twitter_password -> <<"Twitter lˆsenord:">>;
+	twitter_username -> <<"Twitter anv√§ndarnamn:">>;
+	twitter_password -> <<"Twitter l√∂senord:">>;
 	twitter_auto -> <<"Posta automatiskt mina Twoorls till Twitter?">>;
 	submit -> <<"skicka">>;
 	
 	%% error messages
 	{missing_field, Field} ->
-	    [<<"">>, Field, <<" f‰ltet ‰r obligatoriskt">>];
+	    [<<"">>, Field, <<" f√§ltet √§r obligatoriskt">>];
 	{username_taken, Val} ->
-	    [<<"Anv‰ndarnamnet '">>, Val, <<"' ‰r taget">>];
+	    [<<"Anv√§ndarnamnet '">>, Val, <<"' √§r taget">>];
 	{invalid_username, Val} ->
-	    [<<"Anv‰ndarnamnet '">>, Val,
-	     <<"' ‰r ogiltigt. Enbart bokst‰ver, nummer och understreck ('_') "
-	      " ‰r tillÂtna">>];
+	    [<<"Anv√§ndarnamnet '">>, Val,
+	     <<"' √§r ogiltigt. Enbart bokst√§ver, nummer och understreck ('_') "
+	      " √§r till√•tna">>];
 	invalid_login ->
-	    <<"Ogiltigt anv‰ndarnamn eller lˆsenord">>;
+	    <<"Ogiltigt anv√§ndarnamn eller l√∂senord">>;
 	{too_short, Field, Min} ->
-	    [<<"">>, Field, <<" ‰r fˆr kort (">>, Min,
+	    [<<"">>, Field, <<" √§r f√∂r kort (">>, Min,
 	     <<" tecken minst)">>];
 	password_mismatch ->
-	    <<"Lˆsenorden matchade inte">>;
+	    <<"L√∂senorden matchade inte">>;
 	twitter_unauthorized ->
-	    <<"Twitter ratade anv‰ndarnamn/lˆsenords kombinationen du "
-	     "tillhandahˆll">>;
+	    <<"Twitter ratade anv√§ndarnamn/l√∂senords kombinationen du "
+	     "tillhandah√∂ll">>;
 	twitter_authorization_error ->
-	    <<"Kund einte koppla upp mot Twitter. Var v‰nlig fˆrsˆk igen senare.">>;
+	    <<"Kund einte koppla upp mot Twitter. Var v√§nlig f√∂rs√∂k igen senare.">>;
 	{invalid_url, Field} ->
-	    [<<"">>, Field, <<" URL:en mÂste bˆrja med 'http://'">>];
+	    [<<"">>, Field, <<" URL:en m√•ste b√∂rja med 'http://'">>];
 	
 	%% confirmation messages
-	settings_updated ->
-	    [<<"Dina inst‰llningar har uppdaterats framgÂngsrikt">>];
-
-	%% miscellaneous
-	{seconds_ago, Val} -> [Val, <<" sekunder sedan">>];
-	{minutes_ago, Val} -> [Val, <<" minuter sedan">>];
-	{hours_ago, Val} -> [Val, <<" timmar sedan">>];
-	{days_ago, Val} -> [Val, <<" dagar sedan">>]
-    end.
+	set
