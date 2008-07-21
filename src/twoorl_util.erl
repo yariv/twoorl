@@ -277,7 +277,7 @@ update_session(A, Usr, Key) ->
 
 
 gravatar_icon(GravatarId) ->
-    [<<"<img alt=\"gravatar\" class=\"gravatar\" "
+    [<<"<img alt=\"gravatar\" width=\"32\" height=\"32\" class=\"gravatar\" "
       "src=\"http://www.gravatar.com/avatar.php?"
       "size=32&amp;gravatar_id=">>,
      GravatarId, <<"\"/>">>].
@@ -371,7 +371,8 @@ bundles() ->
      {<<"kor">>, <<"한국어">>, twoorl_kor},
      {<<"pol">>, <<"Polski">>, twoorl_pol},
      {<<"por">>, <<"Português Brasileiro">>, twoorl_por_br},
-     {<<"ru">>, <<"Русский">>, twoorl_rus}].
+     {<<"ru">>, <<"Русский">>, twoorl_rus},
+     {<<"sv">>, <<"Svenska">>, twoorl_sv}].
 
 get_bundle(A) ->
     Module1 =

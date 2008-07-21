@@ -26,7 +26,8 @@ send_tweet(Usr, Msg) ->
     Res = twitter_client:status_update(
 	    Usr:twitter_username(),
 	    Usr:twitter_password(),
-	    [{"status", Msg:body_raw()}]),
+	    [{"status", Msg:body_raw()},
+	     {"source", "twoorl"}]),
     case Res of
         {error, _} -> 
             ?Warn("error sending tweet ~p ~p", [Msg:id(), Res]),

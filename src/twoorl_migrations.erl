@@ -10,7 +10,6 @@ m6() ->
     lists:foreach(
       fun(Msg) ->
 	      BodyRaw = binary_to_list(msg:body_raw(Msg)),
-	      ?L(BodyRaw),
 	      {Body1, BodyNoLinks, _Names} =
 		  msg:process_raw_body(BodyRaw),
 	      HasLinks = regexp:matches(BodyRaw, Re) =/= {match, []},
