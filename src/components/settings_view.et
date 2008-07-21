@@ -1,5 +1,6 @@
 <%@ index([{B, {TwitterUsername, TwitterPassword, TwitterEnabledChecked,
-    GravatarEnabledChecked, Background}}, UiMsgs]) %>
+    GravatarEnabledChecked, Background}},
+    UiMsgs]) %>
 <div class="t2"><% B(settings_cap) %></div>
 <% UiMsgs %>
 <form action="/settings" method="post">
@@ -23,6 +24,5 @@
     </div>
     <div><br/><input type="submit" value="submit"/></div>
   </div>
-
 </form>
 

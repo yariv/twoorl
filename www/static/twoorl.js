@@ -11,6 +11,14 @@ $(function() {
 	$("#chars").text("" + (maxChars - length));
 	
     });
+    $("#language_select").change(function(e) {
+	var select = $("#language_select")[0];
+	var lang = select.options[select.selectedIndex].value;
+	document.cookie =
+	    'lang=' + lang + '; expires=Wed, 1 Jan 2020 00:00:00 UTC; path=/';
+	location.href = location.href;
+    });
+	
 });
 
 function val() {
@@ -34,7 +42,7 @@ function follow(username, val) {
     $.post("/api/follow",
 	   {"username": username,
 	    "value": val},
-	   function(Res) {
+	   function(res) {
 	       if (val == "1") {
 		   $("#follow").hide();
 		   $("#unfollow").show();
@@ -45,3 +53,14 @@ function follow(username, val) {
 	   });
 	   
 }
+
+function toggle_twitter(input) {
+    $.post("/api/toggle_twitter",
+	   {"value": input.value == "on"},
+	   function(res) {
+	       if (res != "ok") {
+		   alert("Toggle Twitter failed");
+	       }
+	   });
+}
+

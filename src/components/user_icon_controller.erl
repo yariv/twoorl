@@ -24,6 +24,6 @@
 private() ->
     true.
 
-index(A, Usr) ->
+index(_A, Usr) ->
     {data, {usr:get_link(Usr),
 	    usr:get_icon(Usr, true)}}.

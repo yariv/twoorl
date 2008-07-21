@@ -43,6 +43,7 @@ index(A) ->
 		  end),
 	    Errs1 = 
 		if Errs == [] ->
+%%			twoorl_stats:cast({record, site_login}),
 			Hash = crypto:sha([usr:username(Usr), Password]),
 			case usr:password(Usr) of
 			    Hash ->
@@ -54,8 +55,7 @@ index(A) ->
 			Errs
 		end,
 	    if Errs1 == [] ->
-            spawn(twoorl_stats, call, [{record, site_login}]),
-		    do_login(Usr);
+		    do_login(A, Usr);
 	       true ->
 		    [?Data(A, undefined),
 		     {ewc, ui_msgs, [A, Errs1]}]
@@ -72,8 +72,46 @@ get_usr(Username) ->
 	    {ok, Usr}
     end.
 
-do_login(Usr) ->
+do_login(A, Usr) ->
     Key = twoorl_util:gen_key(),
-    twoorl_util:update_session_by_key(Usr, Key),
-    usr:update([{session_key, Key}], {id,'=',usr:id(Usr)}),
-    {response, [yaws_api:setcookie("key", Key), ewr]}.
+    LangCookie = erlyweb_util:get_cookie("lang", A),
+    Usr1 = case LangCookie of
+	       undefined ->
+		   Usr;
+	       Lang ->
+		   LangBin = list_to_binary(Lang),
+		   case Usr:language() of
+		       LangBin ->
+			   Usr;
+		       _ ->
+			   spawn(fun() -> 
+					 usr:update([{language, Lang}],
+						    {id,'=',Usr:id()})
+				 end),
+			   usr:language(Usr, Lang)
+		   end
+	   end,
+
+    twoorl_util:update_session(A, Usr1, Key),
+    spawn(fun() ->
+		  usr:update([{session_key, Key}], {id,'=',usr:id(Usr1)})
+	  end),
+    Response = [twoorl_util:cookie("key", Key)],
+    
+    %% set the language cookie for the session if it's not defined
+    Response1 = if LangCookie == undefined ->
+			case Usr1:language() of
+			    undefined ->
+				Response;
+			    Other ->
+				[twoorl_util:cookie("lang", Other) | Response]
+			end;
+		   true ->
+			Response
+		end,
+    {response, [{ewr, home} | Response1]}.
+
+			Response
+		end,
+    {response, [{ewr, home} | Response1]}.
+

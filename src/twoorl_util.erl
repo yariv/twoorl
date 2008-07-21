@@ -22,6 +22,9 @@
 -compile(export_all).
 -include("twoorl.hrl").
 
+cookie(Key, Val) ->
+    yaws_api:setcookie(Key, Val, "/", "Wed 01-01-2020 00:00:00 GMT").
+
 gen_key() ->
     gen_key(?DEFAULT_KEY_SIZE).
 
@@ -50,30 +53,28 @@ join(List, Delim) ->
 	 (Elem, Acc) ->
 	      [Elem, Delim | Acc]
       end, [], lists:reverse(List)).
-	      
-    
-get_seconds_since({datetime, Val}) ->
+
+get_seconds_since({datetime, Val}) ->	      
     get_seconds_since(Val);
 get_seconds_since(Val) ->
     calendar:datetime_to_gregorian_seconds(
       calendar:local_time()) -
-	calendar:datetime_to_gregorian_seconds(Val).
+       calendar:datetime_to_gregorian_seconds(Val).
 
 get_time_since(DateTime) ->
     Diff = 
 	get_seconds_since(DateTime),
-    {Val1, UnitStr} =
+    {Type, Val} =
 	if Diff < 60 ->
-		{Diff, <<"seconds">>};
+		{seconds_ago, Diff};
 	   Diff < 3600 ->
-		{round(Diff / 60), <<"minutes">>};
+		{minutes_ago, round(Diff/60)};
 	   Diff < 86400 ->
-		{round(Diff / 3600), <<"hours">>};
+		{hours_ago, round(Diff/3600)};
 	   true ->
-		{round(Diff / 86400), <<"days">>}
+		{days_ago, round(Diff/86400)}
 	end,
-    [integer_to_list(Val1), 32, UnitStr, <<" ago">>].
-
+    {Type, integer_to_list(Val)}.
 
 auth(A, Fun) ->
     auth(A, Fun, fun() -> {ewr, login} end).
@@ -131,7 +132,7 @@ htmlize_l([X|Tail], Ack) when is_list(X) ->
 log(Module, Line, Level, FormatFun) ->
     Func = case Level of
 	       debug ->
-		   undefined;
+		   info_msg;
 	       info ->
 		   info_msg;
 	       normal ->
@@ -261,15 +262,24 @@ get_session_key(A) ->
     yaws_arg:get_opaque_val(A, key).
 
 update_session(A, Usr) ->
-    update_session_by_key(twoorl_util:get_session_key(A), Usr).
+    Key = twoorl_util:get_session_key(A),
+    update_session(A, Usr, Key).
 
-update_session_by_key(Key, Usr) ->
-    mnesia:dirty_write(#session{key=Key,
-				value=Usr}).
+update_session(A, Usr, Key) ->
+    NewSession = #session{key=Key,
+			  value=Usr},
+    mnesia:dirty_write(NewSession),
+    Opaque1 = 
+	lists:map(fun({session, _}) -> {session, NewSession};
+		     (Other) -> Other
+		  end, yaws_arg:opaque(A)),
+    yaws_arg:opaque(A, Opaque1).
 
 
 gravatar_icon(GravatarId) ->
-    [<<"<img border=\"0\" src=\"http://www.gravatar.com/avatar.php?size=32&gravatar_id=">>,
+    [<<"<img alt=\"gravatar\" class=\"gravatar\" "
+      "src=\"http://www.gravatar.com/avatar.php?"
+      "size=32&amp;gravatar_id=">>,
      GravatarId, <<"\"/>">>].
 
 gravatar_id(Email) ->
@@ -303,6 +313,7 @@ iolist_fun(Rec, Fun) ->
 
 
 
+%% Used for RSS formatting
 %% Reference: http://cyber.law.harvard.edu/rss/rss.html
 format_datetime({Date = {Year, Month, Day}, {Hour, Minute, Second}}) ->
     Daynum = calendar:day_of_the_week(Date),
@@ -351,5 +362,54 @@ get_feed_link(Url, Format) ->
 with_bundle(A, Data) ->
     {data, {get_bundle(A), Data}}.
 
+%% codes taken from http://www.loc.gov/standards/iso639-2/php/code_list.php
+bundles() ->
+    [{<<"eng">>, <<"English">>, twoorl_eng},
+     {<<"spa">>, <<"Español">>, twoorl_spa},
+     {<<"deu">>, <<"Deutsch">>, twoorl_deu},
+     {<<"fra">>, <<"Français">>, twoorl_fra},
+     {<<"kor">>, <<"한국어">>, twoorl_kor},
+     {<<"pol">>, <<"Polski">>, twoorl_pol},
+     {<<"por">>, <<"Português Brasileiro">>, twoorl_por_br},
+     {<<"ru">>, <<"Русский">>, twoorl_rus}].
+
 get_bundle(A) ->
-    fun twoorl_eng:bundle/1.
+    Module1 =
+	case erlyweb_util:get_cookie("lang", A) of
+	    undefined ->
+		twoorl_eng;
+	    Lang ->
+		Lang1 = list_to_binary(Lang),
+		case lists:keysearch(Lang1, 1, bundles()) of
+		    false ->
+			?Warn("undefined language: ~p ~p", 
+			      [get_usr(A), Lang1]),
+			twoorl_eng;
+		    {value, {_, _, Module}} -> Module
+		end
+	end,
+    fun(StrId) ->
+	    %% Some values may not have been translated from English.
+	    %% We catch such exceptions and fall back on the english
+	    %% translation.
+	    case catch Module1:bundle(StrId) of
+		{'EXIT', Err} ->
+		    case Module1 of
+			twoorl_eng ->
+			    %% this is not supposed to happen
+			    exit(Err);
+			_ ->
+			    twoorl_eng:bundle(StrId)
+		    end;
+		Other ->
+		    Other
+	    end
+    end.
+
+i18n(A, Val) ->
+    F = get_bundle(A), F(Val).
+	    
+
+delete_sessions() ->
+    Sessions = mnesia:dirty_match_object(#session{_ = '_'}),
+    lists:foreach(fun mnesia:dirty_delete_object/1, Sessions).

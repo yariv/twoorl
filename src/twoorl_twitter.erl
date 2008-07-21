@@ -24,15 +24,16 @@
 
 send_tweet(Usr, Msg) ->
     Res = twitter_client:status_update(
-        Usr:twitter_username(),
-        Usr:twitter_password(),
-        [{"status", Msg:body_raw()}]
-    ),
+	    Usr:twitter_username(),
+	    Usr:twitter_password(),
+	    [{"status", Msg:body_raw()}]),
     case Res of
         {error, _} -> 
             ?Warn("error sending tweet ~p ~p", [Msg:id(), Res]),
-            msg:update([{twitter_status, ?TWITTER_SENT_ERR}], {id, '=', Msg:id()});
-	    _ ->
-            spawn(twoorl_stats, call, [{record, twitter_crosspost}]),
-            msg:update([{twitter_status, ?TWITTER_SENT_OK}], {id, '=', Msg:id()})
+            msg:update([{twitter_status, ?TWITTER_SENT_ERR}],
+		       {id, '=', Msg:id()});
+	_ ->
+%%	    twoorl_stats:cast({record, twitter_crosspost}),
+            msg:update([{twitter_status, ?TWITTER_SENT_OK}],
+		       {id, '=', Msg:id()})
     end.

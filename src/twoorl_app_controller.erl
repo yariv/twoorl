@@ -27,16 +27,17 @@ hook(A) ->
     case erlyweb:get_initial_ewc({ewc, A1}) of
 	{page, "/"} -> start(A1);
 	{page, "/static" ++ _} = Ewc -> Ewc;
-	{page, "/favicon.ico"} = Ewc -> {page, "/static/favicon.ico"};
-	{page, [$/ | Username]} ->
+	{page, "/favicon.ico"} -> {page, "/static/favicon.ico"};
+	{page, [$/ | Username] = Path} ->
 	    A2 = yaws_arg:appmoddata(A1, "/users/" ++ Username),
-	    start(A2);
+	    A3 = yaws_arg:add_to_opaque(A2, {paging_path, Path}),
+	    start(A3);
 
 	%% redirect user urls from "/users/[Username]" to "/[Username]"
 	{ewc, users_controller, users_view, catch_all,
 	 [_, [Username]]} ->
 	    {response, [{redirect_local, {any_path, [$/|Username]}, 301}]};
-	Ewc ->
+	_Ewc ->
 	    start(A1)
     end.
 

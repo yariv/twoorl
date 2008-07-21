@@ -40,20 +40,29 @@ show(A, UserIds) ->
 show(A, UserIds, Opts) ->
     OrderBy = {order_by, {created_on, desc}},
     
+    Where = case proplists:get_value(filter_spam, Opts) of
+		true ->
+		    {'not', {spam,'=',1}};
+		_ ->
+		    true
+	    end,
     %% this function is a prime optimization candidate
-    Total = 
+    Where1 = 
 	if UserIds =/= undefined ->
-		msg:count('*', {usr_id, in, UserIds});
+		{'and', [{usr_id, in, UserIds}, Where]};
 	   true ->
-		msg:count('*')
+		Where
 	end,
+    Total = msg:count('*', Where1),
+
     {replace, 
      {ewc, paging,
       [A, fun(Limit) ->
-		  if UserIds =/= undefined ->
-			  msg:find({usr_id,in,UserIds}, [OrderBy, Limit]);
-		     true ->
-			  msg:find_with([OrderBy, Limit])
+		  case Where1 of
+		      undefined ->
+			  msg:find_with([OrderBy, Limit]);
+		      _ ->
+			  msg:find(Where1, [OrderBy, Limit])
 		  end
 	  end,
        fun(Msgs) ->
@@ -94,7 +103,8 @@ show_msg(A, Msg, Opts) ->
 		{usr:get_icon_link(Username, GravatarId),
 		 usr:get_link(Username)}
 	end,
-    CreatedOn = msg:get_time_since(Msg),
+    CreatedOn = twoorl_util:i18n(A, msg:get_time_since(Msg)),
+
     IsBig = proplists:get_value(is_big, Opts) == true,
     
     {data, {Username, Icon, Userlink,

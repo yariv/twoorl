@@ -107,7 +107,15 @@ get_links(A, NumPages, Page, Params) ->
     Page1 = lists:max([lists:min([Page, NumPages]), 1]),
     Params1 = proplists:delete("page", Params),
 
-    BaseUrl1 = erlyweb_util:get_url_prefix(A),
+    %% ugly hack ahead to get around appmod rewriting for the 'users'
+    %% component
+    A1 = case yaws_arg:get_opaque_val(A, paging_path) of
+	     undefined ->
+		 A;
+	     Val ->
+		 yaws_arg:appmoddata(A, Val)
+	 end,
+    BaseUrl1 = erlyweb_util:get_url_prefix(A1),
 
     BaseUrl2 = 
 	[BaseUrl1, "?", lists:map(fun({Key, Val}) -> [Key,$=,Val,$&] end,

@@ -95,7 +95,7 @@ get_gravatar_id(Msg) ->
 		Other ->
 		    Other
 	    end;
-	0 ->
+	_ ->
 	    ?DEFAULT_GRAVATAR_ID
     end.
 

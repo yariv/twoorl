@@ -36,8 +36,8 @@
 %% a gen_server process is spawned locally and its name is prefixed to
 %% prevent named process collision.
 %% 
-%% <strong>Make sure you start inets (<code>inets:start().</code>) before you do
-%% anything.</strong>
+%% <strong>Make sure you start inets (<code>inets:start().</code>) before
+%% you do anything.</strong>
 %% 
 %% <h4>Quick start</h4>
 %% <pre><code>
@@ -47,7 +47,8 @@
 %%   OR
 %% 3&gt; twitter_client:call("myname", account_verify_credentials).
 %% 4&gt; twitter_client:call("myname", user_timeline).
-%% 5&gt; twitter_client:call("myname", status_update, [{"status", "Testing the erlang_twitter twitter_client.erl library."}]).
+%% 5&gt; twitter_client:call("myname", status_update,
+%%   [{"status", "Testing the erlang_twitter twitter_client.erl library."}]).
 %% 6&gt; twitter_client:call("myname", user_timeline).
 %% </code></pre>
 -module(twitter_client).
@@ -56,10 +57,8 @@
 -author("Nick Gerakines <nick@gerakines.net>").
 -version("0.2").
 
--export([
-    init/1, terminate/2, code_change/3,
-    handle_call/3, handle_cast/2, handle_info/2
-]).
+-export([init/1, terminate/2, code_change/3,
+    handle_call/3, handle_cast/2, handle_info/2]).
 
 -export([account_archive/3, account_end_session/3,
     account_update_delivery_device/3, account_update_location/3,
@@ -74,8 +73,7 @@
     request_url/5, start/2, status_destroy/3, status_friends_timeline/3,
     status_public_timeline/3, status_replies/3, status_show/3,
     status_update/3, status_user_timeline/3, text_or_default/3,
-    user_featured/3, user_followers/3, user_friends/3, user_show/3
-]).
+    user_featured/3, user_followers/3, user_friends/3, user_show/3]).
 
 -include("twitter_client.hrl").
 -include_lib("xmerl/include/xmerl.hrl").
@@ -91,7 +89,8 @@
 %%       Result = {ok, pid()} | Error
 %% @doc Start a twitter_client gen_server process for a Twitter user.
 start(Login, Password) ->
-    gen_server:start_link({local, clean_name(Login)}, ?MODULE, [Login, Password], []).
+    gen_server:start_link({local, clean_name(Login)}, ?MODULE,
+			  [Login, Password], []).
 
 %% @equiv call(Client, Method, [])
 call(Client, Method) ->
@@ -133,17 +132,21 @@ init([Login, Password]) ->
 
 %% @private
 handle_call({collect_direct_messages, LowID}, _From, State) ->
-    Messages = twitter_client:collect_direct_messages(State#state.login, State#state.password, 0, LowID, []),
+    Messages = twitter_client:collect_direct_messages(
+		 State#state.login, State#state.password, 0, LowID, []),
     {reply, Messages, State};
 
 handle_call({collect_user_followers, _}, _From, State) ->
-    Followers = twitter_client:collect_user_followers(State#state.login, State#state.password, 0, []),
+    Followers = twitter_client:collect_user_followers(
+		  State#state.login,
+		  State#state.password, 0, []),
     {reply, Followers, State};
 
 handle_call({Method, Args}, _From, State) ->
     Response = case erlang:function_exported(twitter_client, Method, 3) of 
-        false -> {error, unsupported_method};
-        _ -> apply(twitter_client, Method, [State#state.login, State#state.password, Args])
+		   false -> {error, unsupported_method};
+		   _ -> twitter_client:Method(
+			  State#state.login, State#state.password, Args)
     end,
     {reply, Response, State};
 
@@ -226,7 +229,6 @@ status_destroy(Login, Password, Args) ->
 
 %% % -
 %% % Account API methods
-
 account_verify_credentials(Login, Password, _) ->
     Url = build_url("http://twitter.com/account/verify_credentials.xml", []),
     case request_url(get, Url, Login, Password, nil) of
@@ -247,7 +249,8 @@ collect_account_archive(Login, Password, Page, Args, Acc) ->
     NArgs = [{"page", integer_to_list(Page)} ] ++ Args,
     Messages = twitter_client:account_archive(Login, Password, NArgs),
     case length(Messages) of
-        80 -> collect_account_archive(Login, Password, Page + 1, Args, [Messages | Acc]);
+        80 -> collect_account_archive(Login, Password, Page + 1, Args,
+				      [Messages | Acc]);
         0 -> lists:flatten(Acc);
         _ -> lists:flatten([Messages | Acc])
     end.
@@ -258,7 +261,8 @@ account_update_location(Login, Password, Args) ->
     parse_user(Body).
 
 account_update_delivery_device(Login, Password, Args) ->
-    Url = build_url("http://twitter.com/account/update_delivery_device.xml", Args),
+    Url = build_url("http://twitter.com/account/update_delivery_device.xml",
+		    Args),
     Body = request_url(get, Url, Login, Password, nil),
     parse_user(Body).
 
@@ -271,10 +275,12 @@ direct_messages(Login, Password, Args) ->
     parse_statuses(Body).
 
 collect_direct_messages(Login, Password, Page, LowID, Acc) ->
-    Args = [{"page", integer_to_list(Page)}, {"since_id", integer_to_list(LowID)}],
+    Args = [{"page", integer_to_list(Page)},
+	    {"since_id", integer_to_list(LowID)}],
     Messages = twitter_client:direct_messages(Login, Password, Args),
     case length(Messages) of
-        20 -> collect_direct_messages(Login, Password, Page + 1, LowID, [Messages | Acc]);
+        20 -> collect_direct_messages(Login, Password, Page + 1, LowID,
+				      [Messages | Acc]);
         0 -> lists:flatten(Acc);
         _ -> lists:flatten([Messages | Acc])
     end.
@@ -389,9 +395,12 @@ user_followers(Login, Password, Args) ->
     parse_users(Body).
 
 collect_user_followers(Login, Password, Page, Acc) ->
-    Followers = twitter_client:user_followers(Login, Password, [{"page", integer_to_list(Page)}, {"lite", "true"}]),
+    Followers = twitter_client:user_followers(
+		  Login, Password, [{"page", integer_to_list(Page)},
+				    {"lite", "true"}]),
     case length(Followers) of
-        100 -> collect_user_followers(Login, Password, Page + 1, [Followers | Acc]);
+        100 -> collect_user_followers(Login, Password, Page + 1,
+				      [Followers | Acc]);
         0 -> lists:flatten(Acc);
         _ -> lists:flatten([Followers | Acc])
     end.
@@ -421,7 +430,10 @@ notification_follow(Login, Password, Args) ->
         [{"id", Id}] ->
             Url = build_url(UrlBase ++ Id ++ ".xml", []),
             Body = request_url(get, Url, Login, Password, nil),
-            case parse_user(Body) of [#user{ screen_name = Id }] -> true; _ -> false end;
+            case parse_user(Body) of
+		[#user{ screen_name = Id }] -> true;
+		_ -> false
+	    end;
         _ -> {error}
     end.
 
@@ -431,7 +443,10 @@ notification_leave(Login, Password, Args) ->
         [{"id", Id}] ->
             Url = build_url(UrlBase ++ Id ++ ".xml", []),
             Body = request_url(get, Url, Login, Password, nil),
-            case parse_user(Body) of [#user{ screen_name = Id }] -> true; _ -> false end;
+            case parse_user(Body) of
+		[#user{ screen_name = Id }] -> true;
+		_ -> false
+	    end;
         _ -> {error}
     end.
 
@@ -444,7 +459,10 @@ block_create(Login, Password, Args) ->
         [{"id", Id}] ->
             Url = build_url(UrlBase ++ Id ++ ".xml", []),
             Body = request_url(get, Url, Login, Password, nil),
-            case parse_user(Body) of [#user{ screen_name = Id }] -> true; _ -> false end;
+            case parse_user(Body) of
+		[#user{ screen_name = Id }] -> true;
+		_ -> false
+	    end;
         _ -> {error}
     end.
 
@@ -454,7 +472,9 @@ block_destroy(Login, Password, Args) ->
         [{"id", Id}] ->
             Url = build_url(UrlBase ++ Id ++ ".xml", []),
             Body = request_url(get, Url, Login, Password, nil),
-            case parse_user(Body) of [#user{ screen_name = Id }] -> true; _ -> false end;
+            case parse_user(Body) of
+		[#user{ screen_name = Id }] -> true;
+		_ -> false end;
         _ -> {error}
     end.
 
@@ -499,7 +519,10 @@ request_url(post, Url, Login, Pass, Args) ->
             [K ++ "=" ++ yaws_api:url_encode(V) || {K, V} <- Args]
         )
     ),
-    HTTPResult = http:request(post, {Url, headers(Login, Pass), "application/x-www-form-urlencoded", Body} , [], []),
+    HTTPResult = http:request(
+		   post,
+		   {Url, headers(Login, Pass),
+		    "application/x-www-form-urlencoded", Body} , [], []),
     case HTTPResult of
         {ok, {_, _, Res}} -> Res;
         _ -> {error}
@@ -526,21 +549,44 @@ parse_statuses(Body) ->
         {error, _} -> {error};
         Result ->
             {Xml, _Rest} = Result,
-            [parse_status(Node) || Node <- lists:flatten([xmerl_xpath:string("/statuses/status", Xml), xmerl_xpath:string("/direct-messages/direct_message", Xml)])]
+	    Nodes = lists:flatten(
+		      [xmerl_xpath:string("/statuses/status", Xml),
+		       xmerl_xpath:string("/direct-messages/direct_message",
+					  Xml)]),
+            [parse_status(Node) || Node <- Nodes]
     end.
 
 %% @private
 parse_status(Node) when is_tuple(Node) ->
     Status = #status{
-        created_at = text_or_default(Node, ["/status/created_at/text()", "/direct_message/created_at/text()"], ""),
-        id = text_or_default(Node, ["/status/id/text()", "/direct_message/id/text()"], ""),
-        text = text_or_default(Node, ["/status/text/text()", "/direct_message/text/text()"], ""),
-        source = text_or_default(Node, ["/status/source/text()", "/direct_message/source/text()"], ""),
-        truncated = text_or_default(Node, ["/status/truncated/text()", "/direct_message/truncated/text()"], ""),
-        in_reply_to_status_id = text_or_default(Node, ["/status/in_reply_to_status_id/text()", "/direct_message/in_reply_to_status_id/text()"], ""),
-        in_reply_to_user_id = text_or_default(Node, ["/status/in_reply_to_user_id/text()", "/direct_message/in_reply_to_user_id/text()"], ""),
-        favorited = text_or_default(Node, ["/status/favorited/text()", "/direct_message/favorited/text()"], "")
-    },
+      created_at = text_or_default(
+		     Node,
+		     ["/status/created_at/text()",
+		      "/direct_message/created_at/text()"], ""),
+      id = text_or_default(
+	     Node,
+	     ["/status/id/text()", "/direct_message/id/text()"], ""),
+      text = text_or_default(
+	       Node, ["/status/text/text()",
+		      "/direct_message/text/text()"], ""),
+      source = text_or_default(
+		 Node, ["/status/source/text()",
+			"/direct_message/source/text()"], ""),
+      truncated = text_or_default(
+		    Node, ["/status/truncated/text()",
+			   "/direct_message/truncated/text()"], ""),
+      in_reply_to_status_id =
+      text_or_default(
+	Node, ["/status/in_reply_to_status_id/text()",
+	       "/direct_message/in_reply_to_status_id/text()"], ""),
+      in_reply_to_user_id =
+      text_or_default(
+	Node, ["/status/in_reply_to_user_id/text()",
+	       "/direct_message/in_reply_to_user_id/text()"], ""),
+      favorited = text_or_default(
+		    Node, ["/status/favorited/text()",
+			   "/direct_message/favorited/text()"], "")
+     },
     case xmerl_xpath:string("/status/user|/direct_message/sender", Node) of
         [] -> Status;
         [UserNode] -> Status#status{ user = parse_user(UserNode) }
@@ -563,35 +609,67 @@ parse_users(Body) ->
         {error, _} -> {error, Body};
         Result ->
             {Xml, _Rest} = Result,
-            [parse_user(Node) || Node <- xmerl_xpath:string("/users/user", Xml)]
+            [parse_user(Node) ||
+		Node <- xmerl_xpath:string("/users/user", Xml)]
     end.
 
 %% @private
 parse_user(Node) when is_tuple(Node) ->
     UserRec = #user{
-        id = text_or_default(Node, ["/user/id/text()", "/sender/id/text()"], ""),
-        name = text_or_default(Node, ["/user/name/text()", "/sender/name/text()"], ""),
-        screen_name = text_or_default(Node, ["/user/screen_name/text()", "/sender/screen_name/text()"], ""),
-        location = text_or_default(Node, ["/user/location/text()", "/sender/location/text()"], ""),
-        description = text_or_default(Node, ["/user/description/text()", "/sender/description/text()"], ""),
-        profile_image_url = text_or_default(Node, ["/user/profile_image_url/text()", "/sender/profile_image_url/text()"], ""),
-        url = text_or_default(Node, ["/user/url/text()", "/sender/url/text()"], ""),
-        protected = text_or_default(Node, ["/user/protected/text()", "/sender/protected/text()"], ""),
-        followers_count = text_or_default(Node, ["/user/followers_count/text()", "/sender/followers_count/text()"], ""),
-        profile_background_color = text_or_default(Node, ["/user/profile_background_color/text()"], ""),
-        profile_text_color = text_or_default(Node, ["/user/profile_text_color/text()"], ""),
-        profile_link_color = text_or_default(Node, ["/user/profile_link_color/text()"], ""),
-        profile_sidebar_fill_color = text_or_default(Node, ["/user/profile_sidebar_fill_color/text()"], ""),
-        profile_sidebar_border_color = text_or_default(Node, ["/user/profile_sidebar_border_color/text()"], ""),
-        friends_count = text_or_default(Node, ["/user/friends_count/text()"], ""),
-        created_at = text_or_default(Node, ["/user/created_at/text()"], ""),
-        favourites_count = text_or_default(Node, ["/user/favourites_count/text()"], ""),
+        id = text_or_default(
+	       Node,
+	       ["/user/id/text()", "/sender/id/text()"], ""),
+        name = text_or_default(
+		 Node,
+		 ["/user/name/text()", "/sender/name/text()"], ""),
+        screen_name = text_or_default(
+			Node, ["/user/screen_name/text()",
+			       "/sender/screen_name/text()"], ""),
+        location = text_or_default(
+		     Node, ["/user/location/text()",
+			    "/sender/location/text()"], ""),
+        description = text_or_default(
+			Node,
+			["/user/description/text()",
+			 "/sender/description/text()"], ""),
+        profile_image_url = text_or_default(
+			      Node,
+			      ["/user/profile_image_url/text()",
+			       "/sender/profile_image_url/text()"], ""),
+        url = text_or_default(
+		Node, ["/user/url/text()", "/sender/url/text()"], ""),
+        protected = text_or_default(
+		      Node, ["/user/protected/text()",
+			     "/sender/protected/text()"], ""),
+        followers_count = text_or_default(
+			    Node,
+			    ["/user/followers_count/text()",
+			     "/sender/followers_count/text()"], ""),
+        profile_background_color =
+      text_or_default(
+	Node, ["/user/profile_background_color/text()"], ""),
+        profile_text_color =
+      text_or_default(Node, ["/user/profile_text_color/text()"], ""),
+        profile_link_color =
+      text_or_default(Node, ["/user/profile_link_color/text()"], ""),
+        profile_sidebar_fill_color =
+      text_or_default(Node, ["/user/profile_sidebar_fill_color/text()"], ""),
+        profile_sidebar_border_color =
+      text_or_default(Node, ["/user/profile_sidebar_border_color/text()"], ""),
+        friends_count =
+      text_or_default(Node, ["/user/friends_count/text()"], ""),
+        created_at =
+      text_or_default(Node, ["/user/created_at/text()"], ""),
+        favourites_count =
+      text_or_default(Node, ["/user/favourites_count/text()"], ""),
         utc_offset = text_or_default(Node, ["/user/utc_offset/text()"], ""),
-        time_zone = text_or_default(Node, ["/user/time_zone/text()"], ""),
-        following = text_or_default(Node, ["/user/following/text()"], ""),
-        notifications = text_or_default(Node, ["/user/notifications/text()"], ""),
-        statuses_count = text_or_default(Node, ["/user/statuses_count/text()"], "")
-    },
+      time_zone = text_or_default(Node, ["/user/time_zone/text()"], ""),
+      following = text_or_default(Node, ["/user/following/text()"], ""),
+      notifications =
+      text_or_default(Node, ["/user/notifications/text()"], ""),
+      statuses_count =
+      text_or_default(Node, ["/user/statuses_count/text()"], "")
+     },
     case xmerl_xpath:string("/user/status", Node) of
         [] -> UserRec;
         [StatusNode] -> UserRec#user{ status = parse_status(StatusNode) }

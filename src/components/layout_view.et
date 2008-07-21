@@ -1,4 +1,4 @@
-<%@ index([{B, Username}, Navbar, Ewc]) %>
+<%@ index([{B, Username}, Navbar, Ewc, LanguageSelect]) %>
 <table id="top" class="section1">
   <tr>
     <td id="logo"><a href="/">Twoorl</a></td>
@@ -7,6 +7,7 @@
 </table>
 <% Navbar %>
 <% Ewc %>
+<% LanguageSelect %>
 <div id="footer"><% B(get_source) %></div>
 
 <%@ header(B, undefined) %><a href="/login"><% B(login) %></a> | <a href="/register"><% B(register) %></a>

@@ -22,7 +22,6 @@
 -compile(export_all).
 
 save_replies(MsgId, Recipients) ->
-    Replies = [begin
-        reply:new_with( [{usr_id, Recipient:id()}, {msg_id, MsgId}])
-    end || Recipient <- Recipients],
+    Replies = [reply:new_with([{usr_id, Recipient:id()}, {msg_id, MsgId}])
+	       || Recipient <- Recipients],
     reply:insert(Replies).

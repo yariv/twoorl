@@ -15,6 +15,7 @@ process_request(A, Usr) ->
 	    ValidationFun = get_validation_fun(TwitterEnabled),
 	    Background = proplists:get_value("background", Params),
 	    
+	    
 	    {[TwitterUsername, TwitterPassword], Errs} =
 		erlyweb_forms:validate(
 		  Params,
@@ -28,72 +29,72 @@ process_request(A, Usr) ->
 			_ -> [{invalid_url, <<"background image">>} | Errs1]
 		    end,
 	    Errs3 = Errs ++ Errs2,
-	    Messages =
-		case Errs3 of
-		    [] ->
-			Usr2 =
-			    update_settings(
-			      Usr, TwitterUsername, TwitterPassword,
-			      TwitterEnabled, GravatarEnabled, Background),
-			twoorl_util:update_session(A,Usr2),
-			[{updated, {<<"Your settings">>, plural}}];
-		    _ ->
-			[]
-		end,
-	    {data, {TwitterUsername, TwitterPassword,
-		    checked(TwitterEnabled), checked(GravatarEnabled),
-		    str(Background), Errs3,
-		    Messages}};
+	    case Errs3 of
+		[] ->
+		    Usr2 =
+			update_settings(
+			  Usr, TwitterUsername, TwitterPassword,
+			  TwitterEnabled, GravatarEnabled, Background),
+		    twoorl_util:update_session(A,Usr2),
+		    {ewr, settings, ["?success=true"]};
+		_ ->
+		    [result_data(
+		       A,
+		       TwitterUsername, TwitterPassword,
+		       checked(TwitterEnabled), checked(GravatarEnabled),
+		       str(Background)),
+		     {ewc, ui_msgs, [A, Errs3, []]}]
+	    end;
 	_ ->
-	    {data, {str(usr:twitter_username(Usr)),
-		    str(usr:twitter_password(Usr)),
-		    checked(usr:twitter_enabled(Usr)),
-		    checked(usr:gravatar_enabled(Usr)),
-		    str(usr:background(Usr)),
-		    [],
-		    []}}
+	    UiMessages = case lists:member({"success", "true"},
+					yaws_api:parse_query(A)) of
+			     true ->
+			       [settings_updated];
+			     false ->
+				 []
+			 end,
+	    [result_data(A, str(usr:twitter_username(Usr)),
+			 str(usr:twitter_password(Usr)),
+			 checked(usr:twitter_enabled(Usr)),
+			 checked(usr:gravatar_enabled(Usr)),
+			 str(usr:background(Usr))),
+	     {ewc, ui_msgs, [A, [], UiMessages]}]
     end.
 
-get_validation_fun(TwitterEnabled) ->
-    if TwitterEnabled ->
-	    fun(Field, Val) ->
-		    case Val of
-			[] ->
-			    FName = case Field of
-					"twitter_username" ->
-					    "Twitter username";
-					"twitter_password" ->
-					    "Twitter password"
-				    end,
-			    {error, {missing_field, FName}};
-			_ ->
-			    ok
-		    end
-	    end;
-       true ->
-	    fun(_Field, _Val) ->
+result_data(A, TwitterUsername, TwitterPassword, TwitterEnabled,
+	    GravatarEnabled, Background) ->
+    ?Data(A, {TwitterUsername, TwitterPassword, TwitterEnabled,
+	      GravatarEnabled, Background}).
+
+
+get_validation_fun(true) ->
+    fun(Field, Val) ->
+	    case Val of
+		[] ->
+		    FName = case Field of
+				"twitter_username" ->
+				    "Twitter username";
+				"twitter_password" ->
+				    "Twitter password"
+			    end,
+		    {error, {missing_field, FName}};
+		_ ->
 		    ok
 	    end
+    end;
+get_validation_fun(_) ->
+    fun(_Field, _Val) ->
+	    ok
     end.
 
-verify_twitter_credentials(TwitterEnabled, TwitterUsername, TwitterPassword) ->
-    if (TwitterEnabled andalso not (TwitterUsername == [])
-	andalso not (TwitterPassword == [])) ->
-	    case twitter:verify_credentials(
-		   TwitterUsername, TwitterPassword) of
-		ok ->
-		    [];
-		{error, unauthorized} ->
-		    [twitter_unauthorized];
-		{error, Err} ->
-		    ?Error("twitter authorization error: ~p ~p ~p",
-			   [TwitterUsername, TwitterPassword,
-			    Err]),
-		    [twitter_authorization_error]
-	    end;
-       true ->
-	    []
-    end.
+verify_twitter_credentials(_, [], _) -> [];
+verify_twitter_credentials(_, _, []) -> [];
+verify_twitter_credentials(true, Username, Password) ->
+    case twitter_client:account_verify_credentials(Username, Password, []) of
+        true -> [];
+        false -> [twitter_unauthorized]
+    end;
+verify_twitter_credentials(_, _, _) -> [].
 
 update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
 	  GravatarEnabled, Background) ->
@@ -119,13 +120,17 @@ update_settings(Usr, TwitterUsername, TwitterPassword, TwitterEnabled,
 
 
 str(undefined) -> [];
+str(Val) when is_list(Val) -> list_to_binary(Val);
 str(Val) -> Val.
 
 checked(0) -> [];
 checked(false) -> [];
-checked(1) -> <<"checked">>;
-checked(true) -> <<"checked">>.
-    
+checked(1) -> checked1();
+checked(true) -> checked1();
+checked(undefined) -> [].   
+
+checked1() -> 
+    <<"checked=\"checked\"">>.
     
 is_checked(Param, Params) ->
     proplists:get_value(Param, Params)  == "on".
