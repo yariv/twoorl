@@ -368,11 +368,13 @@ bundles() ->
      {<<"spa">>, <<"Español">>, twoorl_spa},
      {<<"deu">>, <<"Deutsch">>, twoorl_deu},
      {<<"fra">>, <<"Français">>, twoorl_fra},
+     {<<"ita">>, <<"Italiano">>, twoorl_ita},
      {<<"kor">>, <<"한국어">>, twoorl_kor},
      {<<"pol">>, <<"Polski">>, twoorl_pol},
      {<<"por">>, <<"Português Brasileiro">>, twoorl_por_br},
      {<<"ru">>, <<"Русский">>, twoorl_rus},
-     {<<"sv">>, <<"Svenska">>, twoorl_sv}].
+     {<<"sv">>, <<"Svenska">>, twoorl_sv},
+     {<<"ch">>, <<"简体中文">>, twoorl_zh_cn}].
 
 get_bundle(A) ->
     Module1 =
