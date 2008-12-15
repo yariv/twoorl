@@ -370,7 +370,7 @@ bundles() ->
      {<<"dk">>, <<"Dansk">>, twoorl_dk},
      {<<"deu">>, <<"Deutsch">>, twoorl_deu},
      {<<"fra">>, <<"Français">>, twoorl_fra},
-     {<<"gre">>, <<"ελλη">>, twoorl_greek},
+     {<<"gre">>, <<"Greek">>, twoorl_greek},
      {<<"ita">>, <<"Italiano">>, twoorl_ita},
      {<<"kor">>, <<"한국어">>, twoorl_kor},
       {<<"pol">>, <<"Polski">>, twoorl_pol},
