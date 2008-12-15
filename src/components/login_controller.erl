@@ -111,7 +111,3 @@ do_login(A, Usr) ->
 		end,
     {response, [{ewr, home} | Response1]}.
 
-			Response
-		end,
-    {response, [{ewr, home} | Response1]}.
-
