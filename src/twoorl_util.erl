@@ -132,7 +132,7 @@ htmlize_l([X|Tail], Ack) when is_list(X) ->
 log(Module, Line, Level, FormatFun) ->
     Func = case Level of
 	       debug ->
-%		   info_msg;
+		   % info_msg;
 		   undefined;
 	       info ->
 		   info_msg;
