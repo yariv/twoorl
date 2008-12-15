@@ -13,7 +13,7 @@
 %% You should have received a copy of the GNU General Public License
 %% along with Twoorl.  If not, see <http://www.gnu.org/licenses/>.
  
--module(twoorl_eng).
+-module(twoorl_greek).
 -export([bundle/1]).
  
 bundle(Tag) ->
